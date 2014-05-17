@@ -1,3 +1,4 @@
+QT += widgets
 HEADERS += rastchet.h \
     mainwindow.h
 SOURCES += rastchet.cpp \
