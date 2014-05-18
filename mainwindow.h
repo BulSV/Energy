@@ -10,36 +10,50 @@
 
 class MainWindow : public QWidget
 {
-Q_OBJECT
-QLabel *lPotochni;
-QLabel *lPoperedni;
-QLabel *lSpozhyto;
-QLabel *lSummaSpozhyto;
-QLabel *lTaryf;
-QLabel *lSummaDoSplaty;
-QLabel *lDo150;
-QLabel *lPonad150;
-QLabel *lSummaDo150;
-QLabel *lSummaPonad150;
-QLabel *lSummaDoSplatyDo150;
-QLabel *lSummaDoSplatyPonad150;
-QLabel *lVsegoDosplaty;
-QLabel *lVsego;
+Q_OBJECT    
+    QLabel *lPilga;
+//    QLabel *lLimit;
+    QLineEdit *lePilga;
+    QLineEdit *leLimit;
 
-QLineEdit *lePotochni;
-QLineEdit *lePoperedni;
-QLineEdit *leTaryfDo150;
-QLineEdit *leTaryfPonad150;
+    QLabel *lPotochni;
+    QLabel *lPoperedni;
+    QLabel *lSpozhyto;
+    QLabel *lSummaSpozhyto;
+    QLabel *lTaryf;
+    QLabel *lSummaDoSplaty;
+    QLabel *lPilgovi;
+    QLabel *lDo150;
+    QLabel *lPonad150;
+    QLabel *lPonad800;
+    QLabel *lSummaPilgovi;
+    QLabel *lTaryfPilgovi;
+    QLabel *lSummaDo150;
+    QLabel *lSummaPonad150;
+    QLabel *lSummaPonad800;
+    QLabel *lSummaDoSplatyPilgovi;
+    QLabel *lSummaDoSplatyDo150;
+    QLabel *lSummaDoSplatyPonad150;
+    QLabel *lSummaDoSplatyPonad8000;
+    QLabel *lVsegoDosplaty;
+    QLabel *lVsego;
 
-QPushButton *bRozrahunok;
+    QLineEdit *lePotochni;
+    QLineEdit *lePoperedni;
+//    QLineEdit *leTaryfPilgovi;
+    QLineEdit *leTaryfDo150;
+    QLineEdit *leTaryfPonad150;
+    QLineEdit *leTaryfPonad800;
 
-QSettings settings;
+    QPushButton *bRozrahunok;
 
-Rastchet rozrahunok;
+    QSettings settings;
 
-void writeDefaultSettings();
-void writeSettings();
-void readSettings();
+    Rastchet rozrahunok;
+
+    void writeDefaultSettings();
+    void writeSettings();
+    void readSettings();
 
 public:
     explicit MainWindow(QWidget *parent = 0);
