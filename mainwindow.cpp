@@ -1,6 +1,4 @@
 #include "mainwindow.h"
-//#include <QVBoxLayout>
-//#include <QHBoxLayout>
 #include <QGridLayout>
 #include <QFile>
 #include <QShortcut>
@@ -83,47 +81,50 @@ MainWindow::MainWindow(QWidget *parent) :
     grid->addWidget(leLimit, 0, 2);
 
     grid->addWidget(lPotochni, 1, 0);
-    grid->addWidget(lPoperedni, 1, 1);
-    grid->addWidget(lSpozhyto, 1, 2);
-    grid->addWidget(lTaryf, 1, 3, 2, 1);
-    grid->addWidget(lSummaDoSplaty, 1, 4, 2, 1);
+    grid->addWidget(lPoperedni, 1, 1, 1, 2);
+    grid->addWidget(lSpozhyto, 1, 3);
+    grid->addWidget(lTaryf, 1, 4, 2, 1);
+    grid->addWidget(lSummaDoSplaty, 1, 5, 2, 1);
 
     grid->addWidget(lePotochni, 2, 0);
-    grid->addWidget(lePoperedni, 2, 1);
-    grid->addWidget(lSummaSpozhyto, 2, 2);
+    grid->addWidget(lePoperedni, 2, 1, 1, 2);
+    grid->addWidget(lSummaSpozhyto, 2, 3);
 
-    grid->addWidget(lPilgovi, 3, 0, 1, 2);
-    grid->addWidget(lSummaPilgovi, 3, 2);
-    grid->addWidget(lTaryfPilgovi, 3, 3);
-    grid->addWidget(lSummaDoSplatyPilgovi, 3, 4);
+    grid->addWidget(lPilgovi, 3, 0, 1, 3);
+    grid->addWidget(lSummaPilgovi, 3, 3);
+    grid->addWidget(lTaryfPilgovi, 3, 4);
+    grid->addWidget(lSummaDoSplatyPilgovi, 3, 5);
 
-    grid->addWidget(lDo150, 4, 0, 1, 2);
-    grid->addWidget(lSummaDo150, 4, 2);
-    grid->addWidget(leTaryfDo150, 4, 3);
-    grid->addWidget(lSummaDoSplatyDo150, 4, 4);
+    grid->addWidget(lDo150, 4, 0, 1, 3);
+    grid->addWidget(lSummaDo150, 4, 3);
+    grid->addWidget(leTaryfDo150, 4, 4);
+    grid->addWidget(lSummaDoSplatyDo150, 4, 5);
 
-    grid->addWidget(lPonad150, 5, 0, 1, 2);
-    grid->addWidget(lSummaPonad150, 5, 2);
-    grid->addWidget(leTaryfPonad150, 5, 3);
-    grid->addWidget(lSummaDoSplatyPonad150, 5, 4);
+    grid->addWidget(lPonad150, 5, 0, 1, 3);
+    grid->addWidget(lSummaPonad150, 5, 3);
+    grid->addWidget(leTaryfPonad150, 5, 4);
+    grid->addWidget(lSummaDoSplatyPonad150, 5, 5);
 
-    grid->addWidget(lPonad800, 6, 0, 1, 2);
-    grid->addWidget(lSummaPonad800, 6, 2);
-    grid->addWidget(leTaryfPonad800, 6, 3);
-    grid->addWidget(lSummaDoSplatyPonad8000, 6, 4);
+    grid->addWidget(lPonad800, 6, 0, 1, 3);
+    grid->addWidget(lSummaPonad800, 6, 3);
+    grid->addWidget(leTaryfPonad800, 6, 4);
+    grid->addWidget(lSummaDoSplatyPonad8000, 6, 5);
 
     grid->addWidget(bRozrahunok, 7, 0);
-    grid->addWidget(lVsegoDosplaty, 7, 2, 1, 2);
-    grid->addWidget(lVsego, 7, 4);
+    grid->addWidget(lVsegoDosplaty, 7, 3, 1, 2);
+    grid->addWidget(lVsego, 7, 5);
 
     grid->setSpacing(1);
 
     layout()->addItem(grid);
 
-    // делает окно фиксированного размера
-    this->layout()->setSizeConstraint(QLayout::SetFixedSize);
+    // seting minimum size of the widget
+    this->setMaximumSize(minimumSize());
 
-    // делаю так, чтобы форма появлялась в центре экрана
+    // setting fixed size of the widget
+//    this->layout()->setSizeConstraint(QLayout::SetFixedSize);
+
+    // setting widget in the center of the window
     this->move(qApp->desktop()->availableGeometry(this).center()-this->rect().center());
 
     lPilgovi->setFrameStyle(QFrame::Box);
@@ -155,20 +156,22 @@ MainWindow::MainWindow(QWidget *parent) :
     leTaryfDo150->setStyleSheet("border: 1px solid black");
     leTaryfPonad150->setStyleSheet("border: 1px solid black");
 
-    // чтобы вызывался деструктор явно!!!
+    // to explicitly call the destructor!!!
     if (!testAttribute(Qt::WA_DeleteOnClose))
         setAttribute(Qt::WA_DeleteOnClose, false);
-    // false, чтобы не выдавало ошибку munmap_chunk(): invalid pointer
+    // false, not to give an error: "munmap_chunk(): invalid pointer"
 
-    // проверяю наличие файла конфигурации
+    // check existing config file
     QFile fileOfSettings;
     if(!fileOfSettings.exists("Energy.ini"))
     {
         writeDefaultSettings();
     }
 
-    // чтение данных из файла
+    // reading data from file
     readSettings();    
+
+    lePotochni->setFocus();
 
     QShortcut *returnShortcut = new QShortcut(QKeySequence("return"), this);
     QShortcut *enterShortcut = new QShortcut(QKeySequence("enter"), this);
