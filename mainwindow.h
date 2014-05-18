@@ -12,7 +12,6 @@ class MainWindow : public QWidget
 {
 Q_OBJECT    
     QLabel *lPilga;
-//    QLabel *lLimit;
     QLineEdit *lePilga;
     QLineEdit *leLimit;
 
@@ -40,7 +39,6 @@ Q_OBJECT
 
     QLineEdit *lePotochni;
     QLineEdit *lePoperedni;
-//    QLineEdit *leTaryfPilgovi;
     QLineEdit *leTaryfDo150;
     QLineEdit *leTaryfPonad150;
     QLineEdit *leTaryfPonad800;

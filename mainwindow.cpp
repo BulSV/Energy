@@ -1,6 +1,7 @@
 #include "mainwindow.h"
-#include <QVBoxLayout>
-#include <QHBoxLayout>
+//#include <QVBoxLayout>
+//#include <QHBoxLayout>
+#include <QGridLayout>
 #include <QFile>
 #include <QShortcut>
 #include <QDesktopWidget>
@@ -36,7 +37,6 @@ MainWindow::MainWindow(QWidget *parent) :
 
         lePotochni(new QLineEdit(this)),
         lePoperedni(new QLineEdit(this)),
-//        leTaryfPilgovi(new QLineEdit(this)),
         leTaryfDo150(new QLineEdit(this)),
         leTaryfPonad150(new QLineEdit(this)),
         leTaryfPonad800(new QLineEdit(this)),
@@ -54,143 +54,77 @@ MainWindow::MainWindow(QWidget *parent) :
     trayIcon->show();
 
     lPotochni->setAlignment(Qt::AlignCenter);
+    lPotochni->setMargin(4);
     lPoperedni->setAlignment(Qt::AlignCenter);
+    lPoperedni->setMargin(4);
     lSpozhyto->setAlignment(Qt::AlignCenter);
+    lSpozhyto->setMargin(4);
     lTaryf->setAlignment(Qt::AlignCenter);
+    lTaryf->setMargin(4);
     lSummaDoSplaty->setAlignment(Qt::AlignCenter);
+    lSummaDoSplaty->setMargin(4);
+    lVsegoDosplaty->setAlignment(Qt::AlignRight);
+    lVsegoDosplaty->setMargin(4);
 
-    setLayout(new QVBoxLayout(this));
+    lPilgovi->setMargin(4);
+    lDo150->setMargin(4);
+    lPonad150->setMargin(4);
+    lPonad800->setMargin(4);
 
-    QHBoxLayout *horUpUp = new QHBoxLayout;
-    horUpUp->addWidget(lPilga, 0, Qt::AlignLeft);
-    horUpUp->addWidget(lePilga, 0, Qt::AlignLeft);
-    horUpUp->addWidget(leLimit, 0, Qt::AlignLeft);
-    horUpUp->addItem(new QSpacerItem(171, sizeHint().height()));
-    horUpUp->setSpacing(5);
+    leTaryfDo150->setTextMargins(2, 2, 2, 2);
+    leTaryfPonad150->setTextMargins(2, 2, 2, 2);
+    leTaryfPonad800->setTextMargins(2, 2, 2, 2);
 
-    QVBoxLayout *vertPot = new QVBoxLayout;
-    vertPot->addWidget(lPotochni, 0, Qt::AlignLeft);
-    vertPot->addWidget(lePotochni, 0, Qt::AlignLeft);
-    vertPot->setSpacing(5);    
+    setLayout(new QGridLayout(this));
 
-    QVBoxLayout *vertPop = new QVBoxLayout;
-    vertPop->addWidget(lPoperedni, 0, Qt::AlignLeft);
-    vertPop->addWidget(lePoperedni, 0, Qt::AlignLeft);
-    vertPop->setSpacing(5);
+    QGridLayout *grid = new QGridLayout;
+    grid->addWidget(lPilga, 0, 0);
+    grid->addWidget(lePilga, 0, 1);
+    grid->addWidget(leLimit, 0, 2);
 
-    QVBoxLayout *vertSpo = new QVBoxLayout;
-    vertSpo->addWidget(lSpozhyto, 0, Qt::AlignLeft);
-    vertSpo->addWidget(lSummaSpozhyto, 0, Qt::AlignLeft);
-    vertSpo->setSpacing(5);
+    grid->addWidget(lPotochni, 1, 0);
+    grid->addWidget(lPoperedni, 1, 1);
+    grid->addWidget(lSpozhyto, 1, 2);
+    grid->addWidget(lTaryf, 1, 3, 2, 1);
+    grid->addWidget(lSummaDoSplaty, 1, 4, 2, 1);
 
-    QHBoxLayout *horUp = new QHBoxLayout;
-    horUp->addItem(vertPot);
-    horUp->addItem(vertPop);
-    horUp->addItem(vertSpo);
-    horUp->addWidget(lTaryf, 0, Qt::AlignLeft);
-    horUp->addWidget(lSummaDoSplaty, 0, Qt::AlignLeft);
-    horUp->setSpacing(5);
+    grid->addWidget(lePotochni, 2, 0);
+    grid->addWidget(lePoperedni, 2, 1);
+    grid->addWidget(lSummaSpozhyto, 2, 2);
 
-    QHBoxLayout *horMidUpUp = new QHBoxLayout;
-    horMidUpUp->addWidget(lPilgovi, 0, Qt::AlignLeft);
-    horMidUpUp->addWidget(lSummaPilgovi, 0, Qt::AlignLeft);
-    horMidUpUp->addWidget(lTaryfPilgovi, 0, Qt::AlignLeft);
-    horMidUpUp->addWidget(lSummaDoSplatyPilgovi, 0, Qt::AlignLeft);
-    horMidUpUp->setSpacing(5);
+    grid->addWidget(lPilgovi, 3, 0, 1, 2);
+    grid->addWidget(lSummaPilgovi, 3, 2);
+    grid->addWidget(lTaryfPilgovi, 3, 3);
+    grid->addWidget(lSummaDoSplatyPilgovi, 3, 4);
 
-    QHBoxLayout *horMidUp = new QHBoxLayout;    
-    horMidUp->addWidget(lDo150, 0, Qt::AlignLeft);
-    horMidUp->addWidget(lSummaDo150, 0, Qt::AlignLeft);
-    horMidUp->addWidget(leTaryfDo150, 0, Qt::AlignLeft);
-    horMidUp->addWidget(lSummaDoSplatyDo150, 0, Qt::AlignLeft);
-    horMidUp->setSpacing(5);
+    grid->addWidget(lDo150, 4, 0, 1, 2);
+    grid->addWidget(lSummaDo150, 4, 2);
+    grid->addWidget(leTaryfDo150, 4, 3);
+    grid->addWidget(lSummaDoSplatyDo150, 4, 4);
 
-    QHBoxLayout *horMidDown = new QHBoxLayout;
-    horMidDown->addWidget(lPonad150, 0, Qt::AlignLeft);
-    horMidDown->addWidget(lSummaPonad150, 0, Qt::AlignLeft);
-    horMidDown->addWidget(leTaryfPonad150, 0, Qt::AlignLeft);
-    horMidDown->addWidget(lSummaDoSplatyPonad150, 0, Qt::AlignLeft);
-    horMidDown->setSpacing(5);
+    grid->addWidget(lPonad150, 5, 0, 1, 2);
+    grid->addWidget(lSummaPonad150, 5, 2);
+    grid->addWidget(leTaryfPonad150, 5, 3);
+    grid->addWidget(lSummaDoSplatyPonad150, 5, 4);
 
-    QHBoxLayout *horMidDownDown = new QHBoxLayout;
-    horMidDownDown->addWidget(lPonad800, 0, Qt::AlignLeft);
-    horMidDownDown->addWidget(lSummaPonad800, 0, Qt::AlignLeft);
-    horMidDownDown->addWidget(leTaryfPonad800, 0, Qt::AlignLeft);
-    horMidDownDown->addWidget(lSummaDoSplatyPonad8000, 0, Qt::AlignLeft);
-    horMidDownDown->setSpacing(5);
+    grid->addWidget(lPonad800, 6, 0, 1, 2);
+    grid->addWidget(lSummaPonad800, 6, 2);
+    grid->addWidget(leTaryfPonad800, 6, 3);
+    grid->addWidget(lSummaDoSplatyPonad8000, 6, 4);
 
-    QHBoxLayout *horDown = new QHBoxLayout;
-    horDown->addWidget(bRozrahunok, 0, Qt::AlignLeft);
-    horDown->addItem(new QSpacerItem(190, sizeHint().height()));
-    horDown->addWidget(lVsegoDosplaty, 0, Qt::AlignRight);
-    horDown->addWidget(lVsego, 0, Qt::AlignRight);
-    horDown->setSpacing(5);
+    grid->addWidget(bRozrahunok, 7, 0);
+    grid->addWidget(lVsegoDosplaty, 7, 2, 1, 2);
+    grid->addWidget(lVsego, 7, 4);
 
-    layout()->addItem(horUpUp);
-    layout()->addItem(horUp);
-    layout()->addItem(horMidUpUp);
-    layout()->addItem(horMidUp);
-    layout()->addItem(horMidDown);
-    layout()->addItem(horMidDownDown);
-    layout()->addItem(horDown);    
-    layout()->setSpacing(5);
+    grid->setSpacing(1);
+
+    layout()->addItem(grid);
 
     // делает окно фиксированного размера
     this->layout()->setSizeConstraint(QLayout::SetFixedSize);
 
     // делаю так, чтобы форма появлялась в центре экрана
     this->move(qApp->desktop()->availableGeometry(this).center()-this->rect().center());
-
-    lPilga->setMinimumWidth(135);
-    lPilga->setMaximumWidth(135);
-    lePilga->setMinimumWidth(95);
-    lePilga->setMaximumWidth(95);
-    leLimit->setMinimumWidth(76);
-    leLimit->setMaximumWidth(76);
-
-    lePotochni->setMaximumWidth(135);
-    lePotochni->setMinimumWidth(135);
-    lePoperedni->setMaximumWidth(95);
-    lSummaSpozhyto->setMaximumWidth(76);
-    lSummaSpozhyto->setMinimumWidth(76);
-    lDo150->setMinimumWidth(235);
-    lDo150->setMaximumWidth(235);
-    lPonad150->setMinimumWidth(235);
-    lPonad150->setMaximumWidth(235);
-    lSummaDo150->setMinimumWidth(76);
-    lSummaPonad150->setMinimumWidth(76);
-    leTaryfDo150->setMaximumWidth(85);
-    leTaryfPonad150->setMaximumWidth(85);
-    lSummaDoSplatyDo150->setMinimumWidth(90);
-    lSummaDoSplatyPonad150->setMinimumWidth(90);
-    lVsego->setMinimumWidth(90);
-
-    lPilgovi->setMinimumWidth(235);
-    lPilgovi->setMaximumWidth(235);
-    lPonad800->setMinimumWidth(235);
-    lPonad800->setMaximumWidth(235);
-    lPotochni->setMinimumWidth(135);
-    lPotochni->setMaximumWidth(135);
-    lPoperedni->setMinimumWidth(95);
-    lPoperedni->setMaximumWidth(95);
-    lSpozhyto->setMinimumWidth(76);
-    lSpozhyto->setMaximumWidth(76);
-    lSummaPilgovi->setMinimumWidth(76);
-    lSummaPilgovi->setMaximumWidth(76);
-    lSummaPonad800->setMinimumWidth(76);
-    lSummaPonad800->setMaximumWidth(76);
-    lTaryf->setMinimumWidth(85);
-    lTaryf->setMaximumWidth(85);
-    lTaryfPilgovi->setMinimumWidth(85);
-    lTaryfPilgovi->setMaximumWidth(85);
-    leTaryfPonad800->setMinimumWidth(85);
-    leTaryfPonad800->setMaximumWidth(85);
-    lSummaDoSplaty->setMinimumWidth(90);
-    lSummaDoSplaty->setMaximumWidth(90);
-    lSummaDoSplatyPilgovi->setMinimumWidth(90);
-    lSummaDoSplatyPilgovi->setMaximumWidth(90);
-    lSummaDoSplatyPonad8000->setMinimumWidth(90);
-    lSummaDoSplatyPonad8000->setMaximumWidth(90);
 
     lPilgovi->setFrameStyle(QFrame::Box);
     lPonad800->setFrameStyle(QFrame::Box);
