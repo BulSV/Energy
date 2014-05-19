@@ -1,19 +1,24 @@
 #include "mainwindow.h"
 #include <QGridLayout>
+#include <QHBoxLayout>
 #include <QFile>
 #include <QShortcut>
 #include <QDesktopWidget>
 #include <QApplication>
 #include <QSystemTrayIcon>
+#include <QDateTime>
 
 MainWindow::MainWindow(QWidget *parent) :
         QWidget(parent, Qt::WindowCloseButtonHint | Qt::WindowMinimizeButtonHint),
         lPilga(new QLabel(QString::fromUtf8("Пiльга(%), лiмiт (кВтг)"), this)),
         lePilga(new QLineEdit(this)),
         leLimit(new QLineEdit(this)),
+        bBackward(new QPushButton(this)),
+        lDate(new QLabel(this)),
+        bForward(new QPushButton(this)),
         lPotochni(new QLabel(QString::fromUtf8("Поточнi показання, кВтг"), this)),
         lPoperedni(new QLabel(QString::fromUtf8("Попереднi\nпоказання, кВтг"), this)),
-        lSpozhyto(new QLabel(QString::fromUtf8("Спожито, Втг"), this)),
+        lSpozhyto(new QLabel(QString::fromUtf8("Спожито, кВтг"), this)),
         lSummaSpozhyto(new QLabel(this)),
         lTaryf(new QLabel(QString::fromUtf8("\nТариф, грн\n"), this)),
         lSummaDoSplaty(new QLabel(QString::fromUtf8("Сумма до\nсплати, грн"), this)),
@@ -73,12 +78,22 @@ MainWindow::MainWindow(QWidget *parent) :
     leTaryfPonad150->setTextMargins(2, 2, 2, 2);
     leTaryfPonad800->setTextMargins(2, 2, 2, 2);
 
+    QDateTime now = QDateTime::currentDateTime();
+    lDate->setText(now.toString());
+
     setLayout(new QGridLayout(this));
+
+    QHBoxLayout *hist = new QHBoxLayout;
+    hist->addWidget(bBackward);
+    hist->addWidget(lDate);
+    hist->addWidget(bForward);
+    hist->setSpacing(4);
 
     QGridLayout *grid = new QGridLayout;
     grid->addWidget(lPilga, 0, 0);
     grid->addWidget(lePilga, 0, 1);
     grid->addWidget(leLimit, 0, 2);
+    grid->addItem(hist, 0, 4, 1, 2);
 
     grid->addWidget(lPotochni, 1, 0);
     grid->addWidget(lPoperedni, 1, 1, 1, 2);
@@ -157,8 +172,8 @@ MainWindow::MainWindow(QWidget *parent) :
     leTaryfPonad150->setStyleSheet("border: 1px solid black");
 
     // to explicitly call the destructor!!!
-    if (!testAttribute(Qt::WA_DeleteOnClose))
-        setAttribute(Qt::WA_DeleteOnClose, false);
+//    if (!testAttribute(Qt::WA_DeleteOnClose))
+//        setAttribute(Qt::WA_DeleteOnClose, false);
     // false, not to give an error: "munmap_chunk(): invalid pointer"
 
     // check existing config file
@@ -168,8 +183,8 @@ MainWindow::MainWindow(QWidget *parent) :
         writeDefaultSettings();
     }
 
-    // reading data from file
-    readSettings();    
+    // reading data from config file
+    readSettings();
 
     lePotochni->setFocus();
 
@@ -183,11 +198,11 @@ MainWindow::MainWindow(QWidget *parent) :
 
 MainWindow::~MainWindow()
 {
-    writeSettings();    
+    writeSettings();
 }
 
 void MainWindow::onButtonRozrahunok()
-{    
+{
     rozrahunok.setPilga(lePilga->text().toInt());
     rozrahunok.setLimit(leLimit->text().toInt());
     rozrahunok.setTaryfDo150(leTaryfDo150->text().toFloat());

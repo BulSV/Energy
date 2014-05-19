@@ -10,10 +10,14 @@
 
 class MainWindow : public QWidget
 {
-Q_OBJECT    
+Q_OBJECT
     QLabel *lPilga;
     QLineEdit *lePilga;
     QLineEdit *leLimit;
+
+    QPushButton *bBackward;
+    QLabel *lDate;
+    QPushButton *bForward;
 
     QLabel *lPotochni;
     QLabel *lPoperedni;

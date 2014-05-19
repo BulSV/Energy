@@ -7,7 +7,7 @@ int main(int argc, char **argv)
     app.setWindowIcon(QIcon(":/EnergyIcon.png"));
 
     MainWindow w;
-    w.show();    
+    w.show();
 
     return app.exec();
 }
