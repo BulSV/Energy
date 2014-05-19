@@ -56,6 +56,8 @@ Q_OBJECT
     void writeDefaultSettings();
     void writeSettings();
     void readSettings();
+private slots:
+    void updateTime();
 
 public:
     explicit MainWindow(QWidget *parent = 0);

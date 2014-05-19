@@ -7,6 +7,7 @@
 #include <QApplication>
 #include <QSystemTrayIcon>
 #include <QDateTime>
+#include <QTimer>
 
 MainWindow::MainWindow(QWidget *parent) :
         QWidget(parent, Qt::WindowCloseButtonHint | Qt::WindowMinimizeButtonHint),
@@ -78,8 +79,8 @@ MainWindow::MainWindow(QWidget *parent) :
     leTaryfPonad150->setTextMargins(2, 2, 2, 2);
     leTaryfPonad800->setTextMargins(2, 2, 2, 2);
 
-    QDateTime now = QDateTime::currentDateTime();
-    lDate->setText(now.toString());
+    QTimer *timer = new QTimer(this);
+    timer->start(1000);
 
     setLayout(new QGridLayout(this));
 
@@ -194,6 +195,8 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(returnShortcut, SIGNAL(activated()), this, SLOT(onButtonRozrahunok()));
     connect(enterShortcut, SIGNAL(activated()), this, SLOT(onButtonRozrahunok()));
     connect(bRozrahunok, SIGNAL(clicked()), this, SLOT(onButtonRozrahunok()));
+
+    connect(timer, SIGNAL(timeout()), this, SLOT(updateTime()));
 }
 
 MainWindow::~MainWindow()
@@ -250,4 +253,9 @@ void MainWindow::readSettings()
     leTaryfDo150->setText(settings.value("TaryfDo150", 0).toString());
     leTaryfPonad150->setText(settings.value("TaryfPonad150", 0).toString());
     leTaryfPonad800->setText(settings.value("TaryfPonad800", 0).toString());
+}
+
+void MainWindow::updateTime()
+{
+    lDate->setText(QDateTime::currentDateTime().toString());
 }
