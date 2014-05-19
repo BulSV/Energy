@@ -46,24 +46,28 @@ int Rastchet::spozhytoPilgovi() const
 }
 int Rastchet::spozhytoDo150() const
 {
-    if(spozhyto() > itsLimit && spozhyto() <= 150 && itsPotochni > 0 && itsPoperedni > 0 && spozhyto() > 0)
-        return spozhyto();
-    if(spozhyto() > itsLimit && itsPotochni > 0 && itsPoperedni > 0 && spozhyto() > 0)
+    if((spozhyto() - spozhytoPilgovi() > 0) && (spozhyto() - spozhytoPilgovi() <= 150)
+            && itsPotochni > 0 && itsPoperedni > 0 && spozhyto() > 0)
+        return (spozhyto() - spozhytoPilgovi());
+    if((spozhyto() - itsLimit > 0) && itsPotochni > 0 && itsPoperedni > 0 && spozhyto() > 0)
         return 150;
     return 0;
 }
 int Rastchet::spozhytoPonad150() const
 {
-    if(spozhyto() > 150 && spozhyto() <= 800 && itsPotochni > 0 && itsPoperedni > 0 && spozhyto() > 0)
-        return (spozhyto() - 150);
-    if(spozhyto() > 150 && itsPotochni > 0 && itsPoperedni > 0 && spozhyto() > 0)
+    if((spozhyto() - spozhytoPilgovi() - spozhytoDo150() > 0)
+            && (spozhyto() - spozhytoPilgovi() - spozhytoDo150() <= 800)
+            && itsPotochni > 0 && itsPoperedni > 0 && spozhyto() > 0)
+        return (spozhyto() - spozhytoPilgovi() - spozhytoDo150());
+    if((spozhyto() - 150 > 0) && itsPotochni > 0 && itsPoperedni > 0 && spozhyto() > 0)
         return 800;
     return 0;
 }
 
 int Rastchet::spozhytoPonad800() const
 {
-    if(spozhyto() > 800 && itsPotochni > 0 && itsPoperedni > 0 && spozhyto() > 0)
+    if((spozhyto() - spozhytoPilgovi() - spozhytoDo150() - spozhytoPonad150() > 0)
+            && itsPotochni > 0 && itsPoperedni > 0 && spozhyto() > 0)
         return (spozhyto() - spozhytoPilgovi() - spozhytoDo150() - spozhytoPonad150());
     return 0;
 }

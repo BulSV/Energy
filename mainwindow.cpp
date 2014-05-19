@@ -21,7 +21,7 @@ MainWindow::MainWindow(QWidget *parent) :
         lSpozhyto(new QLabel(QString::fromUtf8("Спожито, кВтг"), this)),
         lSummaSpozhyto(new QLabel(this)),
         lTaryf(new QLabel(QString::fromUtf8("\nТариф, грн\n"), this)),
-        lSummaDoSplaty(new QLabel(QString::fromUtf8("Сумма до\nсплати, грн"), this)),
+        lSummaDoSplaty(new QLabel(QString::fromUtf8("Сума до\nсплати, грн"), this)),
         lPilgovi(new QLabel(QString::fromUtf8("пiльговi, кВтг"), this)),
         lDo150(new QLabel(QString::fromUtf8("до 150/250 кВтг"), this)),
         lPonad150(new QLabel(QString::fromUtf8("вiд 150/250 кВтг до 800 кВтг"), this)),
