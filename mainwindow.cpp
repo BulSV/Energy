@@ -57,6 +57,9 @@ MainWindow::MainWindow(QWidget *parent) :
                           QString::fromUtf8("Програма \"Розрахунок електроенергії\" запущена!"));
     trayIcon->show();
 
+    bBackward->setIcon(QIcon(":/left.png"));
+    bForward->setIcon(QIcon(":/right.png"));
+
     lPotochni->setAlignment(Qt::AlignCenter);
     lPotochni->setMargin(4);
     lPoperedni->setAlignment(Qt::AlignCenter);
