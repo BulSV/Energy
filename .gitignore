@@ -15,8 +15,8 @@ object_script.*
 
 # Binary files
 *.exe
-Zatochka!/
-Zatochkad
+Energy!/
+Energyd
 
 # Don't needed CodeBlocks files
 *.depend
