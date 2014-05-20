@@ -53,9 +53,12 @@ Q_OBJECT
 
     Rastchet rozrahunok;
 
+    QList<QMap<QString, QString> > itsHistory;
+
     void writeDefaultSettings();
     void writeSettings();
     void readSettings();
+    void writeHistory();
 private slots:
     void updateTime();
 

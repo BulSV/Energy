@@ -1,15 +1,15 @@
 #ifndef IHISTORYMANAGER_H
 #define IHISTORYMANAGER_H
 
-#include "IHistoryCreator.h"
-#include "IHistoryGetter.h"
+#include "IHistoryWriter.h"
+#include "IHistoryReader.h"
 
-class IHistoryManager : public IHistoryCreator, public IHistoryGetter
+class IHistoryManager : public IHistoryWriter, public IHistoryReader
 {
 public:
     virtual ~IHistoryManager();
-    virtual void createHistory() = 0;
-    virtual QMultiMap<QString, QString> getHistory() = 0;
+    virtual void writeHistory() = 0;
+    virtual QList< QMap<QString, QString> > readHistory() = 0;
 };
 
 #endif // IHISTORYMANAGER_H

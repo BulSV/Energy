@@ -59,7 +59,8 @@ int Rastchet::spozhytoPonad150() const
             && (spozhyto() - spozhytoPilgovi() - spozhytoDo150() <= 800)
             && itsPotochni > 0 && itsPoperedni > 0 && spozhyto() > 0)
         return (spozhyto() - spozhytoPilgovi() - spozhytoDo150());
-    if((spozhyto() - 150 > 0) && itsPotochni > 0 && itsPoperedni > 0 && spozhyto() > 0)
+    if((spozhyto() - spozhytoPilgovi() - spozhytoDo150() > 0)
+            && itsPotochni > 0 && itsPoperedni > 0 && spozhyto() > 0)
         return 800;
     return 0;
 }

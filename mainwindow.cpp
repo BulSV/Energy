@@ -1,4 +1,3 @@
-#include "mainwindow.h"
 #include <QGridLayout>
 #include <QHBoxLayout>
 #include <QFile>
@@ -8,6 +7,8 @@
 #include <QSystemTrayIcon>
 #include <QDateTime>
 #include <QTimer>
+#include "mainwindow.h"
+#include "XmlHistoryManager.h"
 
 MainWindow::MainWindow(QWidget *parent) :
         QWidget(parent, Qt::WindowCloseButtonHint | Qt::WindowMinimizeButtonHint),
@@ -205,6 +206,8 @@ MainWindow::MainWindow(QWidget *parent) :
 MainWindow::~MainWindow()
 {
     writeSettings();
+    XmlHistoryManager* xmlHistoryManager = new XmlHistoryManager("history.xml", itsHistory);
+    xmlHistoryManager->writeHistory();
 }
 
 void MainWindow::onButtonRozrahunok()
@@ -227,6 +230,8 @@ void MainWindow::onButtonRozrahunok()
     lSummaDoSplatyPonad150->setText(QString::number(rozrahunok.summaPonad150(), 'f', 2));
     lSummaDoSplatyPonad8000->setText(QString::number(rozrahunok.summaPonad800(), 'f', 2));
     lVsego->setText(QString::number(rozrahunok.summaZagalna(), 'f', 2));
+
+    writeHistory();
 }
 
 void MainWindow::writeDefaultSettings()
@@ -256,6 +261,33 @@ void MainWindow::readSettings()
     leTaryfDo150->setText(settings.value("TaryfDo150", 0).toString());
     leTaryfPonad150->setText(settings.value("TaryfPonad150", 0).toString());
     leTaryfPonad800->setText(settings.value("TaryfPonad800", 0).toString());
+}
+
+void MainWindow::writeHistory()
+{
+    QMap<QString, QString> map;
+
+    map.insert("date", lDate->text());
+    map.insert("benefit", lePilga->text());
+    map.insert("limit", leLimit->text());
+    map.insert("current", lePotochni->text());
+    map.insert("previous", lePoperedni->text());
+    map.insert("consumed", lSummaSpozhyto->text());
+    map.insert("benefit_consumed", lSummaPilgovi->text());
+    map.insert("to_150_consumed", lSummaDo150->text());
+    map.insert("over_150_consumed", lSummaPonad150->text());
+    map.insert("over_800_consumed", lSummaPonad800->text());
+    map.insert("benefit_tariff", lTaryfPilgovi->text());
+    map.insert("to_150_tariff", leTaryfDo150->text());
+    map.insert("over_150_tariff", leTaryfPonad150->text());
+    map.insert("over_800_tariff", leTaryfPonad800->text());
+    map.insert("benefit_invoicing", lSummaDoSplatyPilgovi->text());
+    map.insert("to_150_invoicing", lSummaDoSplatyDo150->text());
+    map.insert("over_150_invoicing", lSummaDoSplatyPonad150->text());
+    map.insert("over_800_invoicing", lSummaDoSplatyPonad8000->text());
+    map.insert("invoicing", lVsego->text());
+
+    itsHistory.append(map);
 }
 
 void MainWindow::updateTime()

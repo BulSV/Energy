@@ -1,15 +1,17 @@
 QT += widgets
 HEADERS += rastchet.h \
     mainwindow.h \
-    IHistoryCreator.h \
-    IHistoryGetter.h \
+    IHistoryWriter.h \
+    IHistoryReader.h \
     IHistoryManager.h \
-    XmlHistoryManager.h
+    XmlHistoryManager.h \
+    FileOpenException.h
 SOURCES += rastchet.cpp \
     mainwindow.cpp \
     main.cpp \
-    IHistoryCreator.cpp \
-    IHistoryGetter.cpp \
+    IHistoryWriter.cpp \
+    IHistoryReader.cpp \
     IHistoryManager.cpp \
-    XmlHistoryManager.cpp
+    XmlHistoryManager.cpp \
+    FileOpenException.cpp
 RESOURCES += EnergyIcon.qrc
