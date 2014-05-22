@@ -5,7 +5,8 @@ HEADERS += rastchet.h \
     IHistoryReader.h \
     IHistoryManager.h \
     XmlHistoryManager.h \
-    FileOpenException.h
+    FileOpenException.h \
+    XmlReadException.h
 SOURCES += rastchet.cpp \
     mainwindow.cpp \
     main.cpp \
@@ -13,5 +14,6 @@ SOURCES += rastchet.cpp \
     IHistoryReader.cpp \
     IHistoryManager.cpp \
     XmlHistoryManager.cpp \
-    FileOpenException.cpp
+    FileOpenException.cpp \
+    XmlReadException.cpp
 RESOURCES += EnergyIcon.qrc

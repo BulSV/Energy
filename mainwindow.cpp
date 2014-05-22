@@ -8,7 +8,8 @@
 #include <QDateTime>
 #include <QTimer>
 #include "mainwindow.h"
-#include "XmlHistoryManager.h"
+
+#include <QDebug>
 
 MainWindow::MainWindow(QWidget *parent) :
         QWidget(parent, Qt::WindowCloseButtonHint | Qt::WindowMinimizeButtonHint),
@@ -48,9 +49,20 @@ MainWindow::MainWindow(QWidget *parent) :
 
         bRozrahunok(new QPushButton(QString::fromUtf8("Розрахунок"), this)),
 
-        settings("Energy.ini", QSettings::IniFormat)
+//        xmlHistoryManager(new XmlHistoryManager("history.xml", itsHistory)),
+
+        timer(new QTimer(this)),
+
+        settings("Energy.ini", QSettings::IniFormat),
+
+        itsHistory(QList<QMap<QString, QString> >()),
+
+        itsListIterator(itsHistory)
 {
+    qDebug() << "Constructor";
+    xmlHistoryManager = new XmlHistoryManager("history.xml", itsHistory);
     this->setWindowTitle(QString::fromUtf8("Розрахунок електроенергії"));
+
     QSystemTrayIcon *trayIcon = new QSystemTrayIcon(this);
     trayIcon->setIcon(QPixmap(":/EnergyIcon.png"));
     trayIcon->setVisible(true);
@@ -83,7 +95,6 @@ MainWindow::MainWindow(QWidget *parent) :
     leTaryfPonad150->setTextMargins(2, 2, 2, 2);
     leTaryfPonad800->setTextMargins(2, 2, 2, 2);
 
-    QTimer *timer = new QTimer(this);
     timer->start(1000);
 
     setLayout(new QGridLayout(this));
@@ -191,6 +202,30 @@ MainWindow::MainWindow(QWidget *parent) :
     // reading data from config file
     readSettings();
 
+    qDebug() << "reading history...";
+    // reading history
+    try{
+        qDebug() << "in try-catch";
+        itsHistory = xmlHistoryManager->readHistory();
+    } catch (FileOpenException &e) {
+        qDebug() << "!!!" << e.message();
+    } catch (XmlReadException &e) {
+        qDebug() << "!!!" << e.message();
+    } catch (...) {
+        qDebug() << "read history faild";
+        exit(-1);
+    }
+
+    qDebug() << "read history succsess";
+
+    for(int i = 0; i < itsHistory.size(); ++i)
+    {
+        qDebug() << itsHistory.at(i);
+    }
+
+    // settin up list iterator
+//    itsListIterator = itsHistory;
+
     lePotochni->setFocus();
 
     QShortcut *returnShortcut = new QShortcut(QKeySequence("return"), this);
@@ -201,17 +236,22 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(bRozrahunok, SIGNAL(clicked()), this, SLOT(onButtonRozrahunok()));
 
     connect(timer, SIGNAL(timeout()), this, SLOT(updateTime()));
+
+    connect(bBackward, SIGNAL(clicked()), this, SLOT(backwardHistory()));
+    connect(bForward, SIGNAL(clicked()), this, SLOT(forwardHistory()));
 }
 
 MainWindow::~MainWindow()
 {
     writeSettings();
-    XmlHistoryManager* xmlHistoryManager = new XmlHistoryManager("history.xml", itsHistory);
     xmlHistoryManager->writeHistory();
 }
 
 void MainWindow::onButtonRozrahunok()
 {
+    updateTime();
+    timer->start(1000);
+    itsListIterator.toBack();
     rozrahunok.setPilga(lePilga->text().toInt());
     rozrahunok.setLimit(leLimit->text().toInt());
     rozrahunok.setTaryfDo150(leTaryfDo150->text().toFloat());
@@ -290,7 +330,42 @@ void MainWindow::writeHistory()
     itsHistory.append(map);
 }
 
+void MainWindow::setFromHistory(QMap<QString, QString> map)
+{
+    lDate->setText(map.value("date"));
+    lePilga->setText(map.value("benefit"));
+    leLimit->setText(map.value("limit"));
+    lePotochni->setText(map.value("current"));
+    lePoperedni->setText(map.value("previous"));
+    lSummaSpozhyto->setText(map.value("consumed"));
+    lSummaPilgovi->setText(map.value("benefit_consumed"));
+    lSummaDo150->setText(map.value("to_150_consumed"));
+    lSummaPonad150->setText(map.value("over_150_consumed"));
+    lSummaPonad800->setText(map.value("over_800_consumed"));
+    lTaryfPilgovi->setText(map.value("benefit_tariff"));
+    leTaryfDo150->setText(map.value("to_150_tariff"));
+    leTaryfPonad150->setText(map.value("over_150_tariff"));
+    leTaryfPonad800->setText(map.value("over_800_tariff"));
+    lSummaDoSplatyPilgovi->setText(map.value("benefit_invoicing"));
+    lSummaDoSplatyDo150->setText(map.value("to_150_invoicing"));
+    lSummaDoSplatyPonad150->setText(map.value("over_150_invoicing"));
+    lSummaDoSplatyPonad8000->setText(map.value("over_800_invoicing"));
+    lVsego->setText(map.value("invoicing"));
+}
+
 void MainWindow::updateTime()
 {
     lDate->setText(QDateTime::currentDateTime().toString());
+}
+
+void MainWindow::backwardHistory()
+{
+    timer->stop();
+    setFromHistory(itsListIterator.previous());
+}
+
+void MainWindow::forwardHistory()
+{
+    timer->stop();
+    setFromHistory(itsListIterator.next());
 }

@@ -6,7 +6,10 @@
 #include <QLineEdit>
 #include <QPushButton>
 #include <QSettings>
+#include <QListIterator>
+//#include <QMutableListIterator>
 #include "rastchet.h"
+#include "XmlHistoryManager.h"
 
 class MainWindow : public QWidget
 {
@@ -49,18 +52,27 @@ Q_OBJECT
 
     QPushButton *bRozrahunok;
 
+    XmlHistoryManager* xmlHistoryManager;
+
+    QTimer *timer;
+
     QSettings settings;
 
     Rastchet rozrahunok;
 
     QList<QMap<QString, QString> > itsHistory;
+    QListIterator<QMap<QString, QString> > itsListIterator;
+//    QMutableListIterator<QMap<QString, QString> > itsListIterator;
 
     void writeDefaultSettings();
     void writeSettings();
     void readSettings();
     void writeHistory();
+    void setFromHistory(QMap<QString, QString> map);
 private slots:
     void updateTime();
+    void backwardHistory();
+    void forwardHistory();
 
 public:
     explicit MainWindow(QWidget *parent = 0);
