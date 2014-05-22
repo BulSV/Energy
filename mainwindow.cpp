@@ -55,11 +55,10 @@ MainWindow::MainWindow(QWidget *parent) :
 
         settings("Energy.ini", QSettings::IniFormat),
 
-        itsHistory(QList<QMap<QString, QString> >()),
+//        itsHistory(QList<QMap<QString, QString> >()),
 
         itsListIterator(itsHistory)
-{
-    qDebug() << "Constructor";
+{    
     xmlHistoryManager = new XmlHistoryManager("history.xml", itsHistory);
     this->setWindowTitle(QString::fromUtf8("Розрахунок електроенергії"));
 
@@ -202,29 +201,33 @@ MainWindow::MainWindow(QWidget *parent) :
     // reading data from config file
     readSettings();
 
-    qDebug() << "reading history...";
     // reading history
-    try{
-        qDebug() << "in try-catch";
+    try{        
         itsHistory = xmlHistoryManager->readHistory();
     } catch (FileOpenException &e) {
-        qDebug() << "!!!" << e.message();
+        qDebug() << "!!! FileOpenException" << e.message();
+        exit(-1);
     } catch (XmlReadException &e) {
-        qDebug() << "!!!" << e.message();
+        qDebug() << "!!! XmlReadException" << e.message();
+//        exit(-2); //Fix
     } catch (...) {
         qDebug() << "read history faild";
-        exit(-1);
-    }
-
-    qDebug() << "read history succsess";
-
-    for(int i = 0; i < itsHistory.size(); ++i)
-    {
-        qDebug() << itsHistory.at(i);
+        exit(-3);
     }
 
     // settin up list iterator
 //    itsListIterator = itsHistory;
+    itsListIterator.toBack();
+
+    bForward->setEnabled(false);
+    if(itsHistory.size())
+    {
+        bBackward->setEnabled(true);
+    }
+    else
+    {
+        bBackward->setEnabled(false);
+    }
 
     lePotochni->setFocus();
 
@@ -245,6 +248,7 @@ MainWindow::~MainWindow()
 {
     writeSettings();
     xmlHistoryManager->writeHistory();
+    delete xmlHistoryManager;
 }
 
 void MainWindow::onButtonRozrahunok()
@@ -252,6 +256,8 @@ void MainWindow::onButtonRozrahunok()
     updateTime();
     timer->start(1000);
     itsListIterator.toBack();
+    bForward->setEnabled(false);
+    bBackward->setEnabled(true);
     rozrahunok.setPilga(lePilga->text().toInt());
     rozrahunok.setLimit(leLimit->text().toInt());
     rozrahunok.setTaryfDo150(leTaryfDo150->text().toFloat());
@@ -327,12 +333,13 @@ void MainWindow::writeHistory()
     map.insert("over_800_invoicing", lSummaDoSplatyPonad8000->text());
     map.insert("invoicing", lVsego->text());
 
-    itsHistory.append(map);
+    itsHistory.append(map);    
 }
 
 void MainWindow::setFromHistory(QMap<QString, QString> map)
 {
     lDate->setText(map.value("date"));
+    qDebug() << "date" << map.value("date");
     lePilga->setText(map.value("benefit"));
     leLimit->setText(map.value("limit"));
     lePotochni->setText(map.value("current"));
@@ -361,11 +368,27 @@ void MainWindow::updateTime()
 void MainWindow::backwardHistory()
 {
     timer->stop();
-    setFromHistory(itsListIterator.previous());
+    bForward->setEnabled(true);
+    if(itsListIterator.hasPrevious())
+    {
+        setFromHistory(itsListIterator.previous());
+    }
+    else
+    {
+        bBackward->setEnabled(false);
+    }
 }
 
 void MainWindow::forwardHistory()
 {
     timer->stop();
-    setFromHistory(itsListIterator.next());
+    bBackward->setEnabled(true);
+    if(itsListIterator.hasNext())
+    {
+        setFromHistory(itsListIterator.next());
+    }
+    else
+    {
+        bForward->setEnabled(false);
+    }
 }

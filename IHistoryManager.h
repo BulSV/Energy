@@ -9,7 +9,7 @@ class IHistoryManager : public IHistoryWriter, public IHistoryReader
 public:
     virtual ~IHistoryManager();
     virtual void writeHistory() = 0;
-    virtual QList< QMap<QString, QString> > readHistory() = 0;
+    virtual QList< QMap<QString, QString> >& readHistory() = 0;
 };
 
 #endif // IHISTORYMANAGER_H
