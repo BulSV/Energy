@@ -3,21 +3,21 @@
 
 QMap<QString, QString> XmlHistoryManager::parseRecord(QXmlStreamReader *xmlReader)
 {
-    QMap<QString, QString> record;    
+    QMap<QString, QString> record;
 
     if(xmlReader->tokenType() != QXmlStreamReader::StartElement && xmlReader->name() == "record")
-    {        
+    {
         return record;
     }
 
     QXmlStreamAttributes attributes = xmlReader->attributes();
 
     if(attributes.hasAttribute("id"))
-    {        
+    {
         record["id"] = attributes.value("id").toString();
     }
 
-    xmlReader->readNext();    
+    xmlReader->readNext();
 
     while(!(xmlReader->tokenType() == QXmlStreamReader::EndElement
             && xmlReader->name() == "record"))
@@ -97,10 +97,10 @@ QMap<QString, QString> XmlHistoryManager::parseRecord(QXmlStreamReader *xmlReade
         if(xmlReader->name() == "invoicing")
         {
             addElementDataToMap(xmlReader, record);
-        }        
+        }
 
         xmlReader->readNext();
-    }    
+    }
 
     return record;
 }
@@ -113,7 +113,7 @@ void XmlHistoryManager::addElementDataToMap(QXmlStreamReader *xmlReader,
         return;
     }
 
-    QString elementName = xmlReader->name().toString();    
+    QString elementName = xmlReader->name().toString();
 
     xmlReader->readNext();
 
@@ -131,8 +131,8 @@ XmlHistoryManager::XmlHistoryManager(QString fileName,
     , itsHistory(&history)
     , xmlWriter(new QXmlStreamWriter)
     , xmlReader(new QXmlStreamReader)
-{    
-    xmlWriter->setAutoFormatting(true);    
+{
+    xmlWriter->setAutoFormatting(true);
 }
 
 XmlHistoryManager::~XmlHistoryManager()
@@ -142,7 +142,7 @@ XmlHistoryManager::~XmlHistoryManager()
 }
 
 void XmlHistoryManager::writeHistory() throw(FileOpenException)
-{    
+{
     QFile file(itsFileName);
 
     if (!file.open(QIODevice::WriteOnly))
@@ -187,7 +187,7 @@ void XmlHistoryManager::writeHistory() throw(FileOpenException)
         xmlWriter->writeCharacters(itsHistory->at(i).value("benefit_consumed"));
         xmlWriter->writeEndElement();
 
-        xmlWriter->writeStartElement("to_15_consumed");
+        xmlWriter->writeStartElement("to_150_consumed");
         xmlWriter->writeCharacters(itsHistory->at(i).value("to_150_consumed"));
         xmlWriter->writeEndElement();
 
@@ -251,33 +251,33 @@ QList<QMap<QString, QString> >& XmlHistoryManager::readHistory() throw(FileOpenE
     if (!file.open(QIODevice::ReadOnly))
     {
         throw FileOpenException("The file does not exist");
-    }    
+    }
 
-    xmlReader->setDevice(&file);    
+    xmlReader->setDevice(&file);
 
     while (!xmlReader->atEnd() && !xmlReader->hasError())
     {
         QXmlStreamReader::TokenType token = xmlReader->readNext();
 
         if(token == QXmlStreamReader::StartDocument)
-        {            
+        {
             continue;
         }
 
         if(token == QXmlStreamReader::StartElement)
-        {            
+        {
             if(xmlReader->name() == "history")
-            {                
+            {
                 continue;
             }
             if(xmlReader->name() == "record")
-            {                
+            {
                 itsHistory->append(parseRecord(xmlReader));
             }
-        }        
+        }
 
         if(xmlReader->hasError())
-        {            
+        {
             throw XmlReadException(xmlReader->errorString());
         }
     }

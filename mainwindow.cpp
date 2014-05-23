@@ -347,7 +347,7 @@ void MainWindow::writeHistory()
     {
         ((QQueue<QMap<QString, QString> >*)itsHistory)->dequeue();
     }
-    itsHistory->append(map);
+    ((QQueue<QMap<QString, QString> >*)itsHistory)->enqueue(map);
 }
 
 void MainWindow::setFromHistory(QMap<QString, QString> map)
