@@ -8,7 +8,6 @@
 #include <QDateTime>
 #include <QTimer>
 #include <QMessageBox>
-#include <QQueue>
 #include "mainwindow.h"
 
 const int BENEFIT_PERCENT = 0;
@@ -60,7 +59,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
         settings("Energy.ini", QSettings::IniFormat),
 
-        itsHistory(new QQueue<QMap<QString, QString> >()),
+        itsHistory(new QList<QMap<QString, QString> >()),
 
         itsListIterator(*itsHistory)
 {
@@ -345,9 +344,9 @@ void MainWindow::writeHistory()
 
     while(itsHistory->size() >= itsHistoryLimit)
     {
-        ((QQueue<QMap<QString, QString> >*)itsHistory)->dequeue();
+        itsHistory->removeFirst();
     }
-    ((QQueue<QMap<QString, QString> >*)itsHistory)->enqueue(map);
+    itsHistory->append(map);
 }
 
 void MainWindow::setFromHistory(QMap<QString, QString> map)
