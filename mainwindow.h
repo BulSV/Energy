@@ -6,7 +6,6 @@
 #include <QLineEdit>
 #include <QPushButton>
 #include <QSettings>
-//#include <QListIterator>
 #include <QMutableListIterator>
 #include "rastchet.h"
 #include "XmlHistoryManager.h"
@@ -61,7 +60,6 @@ Q_OBJECT
     Rastchet rozrahunok;
 
     QList<QMap<QString, QString> > itsHistory;
-//    QListIterator<QMap<QString, QString> > itsListIterator;
     QMutableListIterator<QMap<QString, QString> > itsListIterator;
 
     void writeDefaultSettings();

@@ -7,9 +7,8 @@
 #include <QSystemTrayIcon>
 #include <QDateTime>
 #include <QTimer>
+#include<QMessageBox>
 #include "mainwindow.h"
-
-#include <QDebug>
 
 MainWindow::MainWindow(QWidget *parent) :
         QWidget(parent, Qt::WindowCloseButtonHint | Qt::WindowMinimizeButtonHint),
@@ -49,16 +48,12 @@ MainWindow::MainWindow(QWidget *parent) :
 
         bRozrahunok(new QPushButton(QString::fromUtf8("Розрахунок"), this)),
 
-//        xmlHistoryManager(new XmlHistoryManager("history.xml", itsHistory)),
-
         timer(new QTimer(this)),
 
         settings("Energy.ini", QSettings::IniFormat),
 
-//        itsHistory(QList<QMap<QString, QString> >()),
-
         itsListIterator(itsHistory)
-{    
+{
     xmlHistoryManager = new XmlHistoryManager("history.xml", itsHistory);
     this->setWindowTitle(QString::fromUtf8("Розрахунок електроенергії"));
 
@@ -202,21 +197,23 @@ MainWindow::MainWindow(QWidget *parent) :
     readSettings();
 
     // reading history
-    try{        
+    try{
         itsHistory = xmlHistoryManager->readHistory();
     } catch (FileOpenException &e) {
-        qDebug() << "!!! FileOpenException" << e.message();
-        exit(-1);
+        trayIcon->showMessage("FileOpenException",
+                              e.message(),
+                              QSystemTrayIcon::Warning);
     } catch (XmlReadException &e) {
-        qDebug() << "!!! XmlReadException" << e.message();
-//        exit(-2); //Fix
+        trayIcon->showMessage("XmlReadException",
+                              e.message());
     } catch (...) {
-        qDebug() << "read history faild";
-        exit(-3);
+        QMessageBox::critical(this,
+                              "Unsupported Exception",
+                              "Read history failed!\nProgram will close...",
+                              QMessageBox::Ok);
+        exit(-1);
     }
 
-    // settin up list iterator
-//    itsListIterator = itsHistory;
     itsListIterator.toBack();
 
     bForward->setEnabled(false);
@@ -333,13 +330,12 @@ void MainWindow::writeHistory()
     map.insert("over_800_invoicing", lSummaDoSplatyPonad8000->text());
     map.insert("invoicing", lVsego->text());
 
-    itsHistory.append(map);    
+    itsHistory.append(map);
 }
 
 void MainWindow::setFromHistory(QMap<QString, QString> map)
 {
     lDate->setText(map.value("date"));
-    qDebug() << "date" << map.value("date");
     lePilga->setText(map.value("benefit"));
     leLimit->setText(map.value("limit"));
     lePotochni->setText(map.value("current"));
@@ -362,18 +358,15 @@ void MainWindow::setFromHistory(QMap<QString, QString> map)
 
 void MainWindow::updateTime()
 {
-    lDate->setText(QDateTime::currentDateTime().toString());
+    lDate->setText(QDateTime::currentDateTime().toString("ddd hh:mm:ss\ndd MMM yyyy"));
 }
 
 void MainWindow::backwardHistory()
 {
     timer->stop();
     bForward->setEnabled(true);
-    if(itsListIterator.hasPrevious())
-    {
-        setFromHistory(itsListIterator.previous());
-    }
-    else
+    setFromHistory(itsListIterator.previous());
+    if(!itsListIterator.hasPrevious())
     {
         bBackward->setEnabled(false);
     }
@@ -383,11 +376,8 @@ void MainWindow::forwardHistory()
 {
     timer->stop();
     bBackward->setEnabled(true);
-    if(itsListIterator.hasNext())
-    {
-        setFromHistory(itsListIterator.next());
-    }
-    else
+    setFromHistory(itsListIterator.next());
+    if(!itsListIterator.hasNext())
     {
         bForward->setEnabled(false);
     }
