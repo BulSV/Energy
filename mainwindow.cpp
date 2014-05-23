@@ -7,8 +7,16 @@
 #include <QSystemTrayIcon>
 #include <QDateTime>
 #include <QTimer>
-#include<QMessageBox>
+#include <QMessageBox>
+#include <QQueue>
 #include "mainwindow.h"
+
+const int BENEFIT_PERCENT = 0;
+const int BENEFIT_LIMIT = 0;
+const float TO_150_TARIFF = 0.2802;
+const float OVER_150_TARIFF = 0.3648;
+const float OVER_800_TARIFF = 0.9576;
+const int HISTORY_LIMIT = 100;
 
 MainWindow::MainWindow(QWidget *parent) :
         QWidget(parent, Qt::WindowCloseButtonHint | Qt::WindowMinimizeButtonHint),
@@ -52,9 +60,11 @@ MainWindow::MainWindow(QWidget *parent) :
 
         settings("Energy.ini", QSettings::IniFormat),
 
-        itsListIterator(itsHistory)
+        itsHistory(new QQueue<QMap<QString, QString> >()),
+
+        itsListIterator(*itsHistory)
 {
-    xmlHistoryManager = new XmlHistoryManager("history.xml", itsHistory);
+    xmlHistoryManager = new XmlHistoryManager("history.xml", *itsHistory);
     this->setWindowTitle(QString::fromUtf8("Розрахунок електроенергії"));
 
     QSystemTrayIcon *trayIcon = new QSystemTrayIcon(this);
@@ -198,7 +208,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     // reading history
     try{
-        itsHistory = xmlHistoryManager->readHistory();
+        itsHistory = &xmlHistoryManager->readHistory();
     } catch (FileOpenException &e) {
         trayIcon->showMessage("FileOpenException",
                               e.message(),
@@ -217,7 +227,7 @@ MainWindow::MainWindow(QWidget *parent) :
     itsListIterator.toBack();
 
     bForward->setEnabled(false);
-    if(itsHistory.size())
+    if(itsHistory->size())
     {
         bBackward->setEnabled(true);
     }
@@ -246,6 +256,7 @@ MainWindow::~MainWindow()
     writeSettings();
     xmlHistoryManager->writeHistory();
     delete xmlHistoryManager;
+    delete itsHistory;
 }
 
 void MainWindow::onButtonRozrahunok()
@@ -280,11 +291,12 @@ void MainWindow::onButtonRozrahunok()
 void MainWindow::writeDefaultSettings()
 {
     settings.clear();
-    settings.setValue("Pilga", 0);
-    settings.setValue("Limit", 0);
-    settings.setValue("TaryfDo150", 0.2802);
-    settings.setValue("TaryfPonad150", 0.3648);
-    settings.setValue("TaryfPonad800", 0.9576);
+    settings.setValue("Pilga", BENEFIT_PERCENT);
+    settings.setValue("Limit", BENEFIT_LIMIT);
+    settings.setValue("TaryfDo150", TO_150_TARIFF);
+    settings.setValue("TaryfPonad150", OVER_150_TARIFF);
+    settings.setValue("TaryfPonad800", OVER_800_TARIFF);
+    settings.setValue("HistoryLimit", HISTORY_LIMIT);
 }
 
 void MainWindow::writeSettings()
@@ -299,11 +311,12 @@ void MainWindow::writeSettings()
 
 void MainWindow::readSettings()
 {
-    lePilga->setText(settings.value("Pilga", 0).toString());
-    leLimit->setText(settings.value("Limit", 0).toString());
-    leTaryfDo150->setText(settings.value("TaryfDo150", 0).toString());
-    leTaryfPonad150->setText(settings.value("TaryfPonad150", 0).toString());
-    leTaryfPonad800->setText(settings.value("TaryfPonad800", 0).toString());
+    lePilga->setText(settings.value("Pilga", BENEFIT_PERCENT).toString());
+    leLimit->setText(settings.value("Limit", BENEFIT_LIMIT).toString());
+    leTaryfDo150->setText(settings.value("TaryfDo150", TO_150_TARIFF).toString());
+    leTaryfPonad150->setText(settings.value("TaryfPonad150", OVER_150_TARIFF).toString());
+    leTaryfPonad800->setText(settings.value("TaryfPonad800", OVER_800_TARIFF).toString());
+    itsHistoryLimit = settings.value("HistoryLimit", HISTORY_LIMIT).toInt();
 }
 
 void MainWindow::writeHistory()
@@ -330,7 +343,11 @@ void MainWindow::writeHistory()
     map.insert("over_800_invoicing", lSummaDoSplatyPonad8000->text());
     map.insert("invoicing", lVsego->text());
 
-    itsHistory.append(map);
+    while(itsHistory->size() >= itsHistoryLimit)
+    {
+        ((QQueue<QMap<QString, QString> >*)itsHistory)->dequeue();
+    }
+    itsHistory->append(map);
 }
 
 void MainWindow::setFromHistory(QMap<QString, QString> map)

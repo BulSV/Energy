@@ -59,7 +59,8 @@ Q_OBJECT
 
     Rastchet rozrahunok;
 
-    QList<QMap<QString, QString> > itsHistory;
+    QList<QMap<QString, QString> >* itsHistory;
+    int itsHistoryLimit;
     QMutableListIterator<QMap<QString, QString> > itsListIterator;
 
     void writeDefaultSettings();
