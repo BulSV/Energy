@@ -16,7 +16,7 @@ object_script.*
 # Binary files
 *.exe
 Energy!/
-Energyd
+EnergyPro
 
 # Don't needed CodeBlocks files
 *.depend
@@ -51,3 +51,5 @@ out
 
 # Needed files
 !.gitignore
+*.xml
+*.ini

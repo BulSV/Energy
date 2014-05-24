@@ -16,6 +16,7 @@ const float TO_150_TARIFF = 0.2802;
 const float OVER_150_TARIFF = 0.3648;
 const float OVER_800_TARIFF = 0.9576;
 const int HISTORY_LIMIT = 100;
+const int DATE_UPDATE_TIME = 1000;
 
 MainWindow::MainWindow(QWidget *parent) :
         QWidget(parent, Qt::WindowCloseButtonHint | Qt::WindowMinimizeButtonHint),
@@ -99,7 +100,7 @@ MainWindow::MainWindow(QWidget *parent) :
     leTaryfPonad800->setTextMargins(2, 2, 2, 2);
 
     updateTime();
-    timer->start(1000);
+    timer->start(DATE_UPDATE_TIME);
 
     setLayout(new QGridLayout(this));
 
@@ -198,13 +199,22 @@ MainWindow::MainWindow(QWidget *parent) :
 
     // check existing config file
     QFile fileOfSettings;
+
     if(!fileOfSettings.exists("Energy.ini"))
-    {        
+    {
         writeDefaultSettings();
         trayIcon->showMessage("FileOpenWarning",
-                              "The file Energy.ini does not exist.\nIt was created with default settings",
+                              "The config file Energy.ini does not exist\nIt was created with default settings");
+    }
+
+    if(!settings.isWritable())
+    {
+        trayIcon->showMessage("FileOpenWarning",
+                              "The config file Energy.ini is in read only mode\nIt can't be changed",
                               QSystemTrayIcon::Warning);
     }
+
+//    fileOfSettings.close();
 
     // reading data from config file
     readSettings();
@@ -212,19 +222,13 @@ MainWindow::MainWindow(QWidget *parent) :
     // reading history
     try{
         itsHistory = &xmlHistoryManager->readHistory();
-    } catch (FileOpenException &e) {
+    } catch (FileOpenException& e) {
         trayIcon->showMessage("FileOpenException",
+                              e.message() + "\nIt will be created");
+    } catch (XmlReadException& e) {
+        trayIcon->showMessage("XmlReadException",
                               e.message(),
                               QSystemTrayIcon::Warning);
-    } catch (XmlReadException &e) {
-        trayIcon->showMessage("XmlReadException",
-                              e.message());
-    } catch (...) {
-        QMessageBox::critical(this,
-                              "Unsupported Exception",
-                              "Read history failed!\nProgram will close...",
-                              QMessageBox::Ok);
-        exit(-1);
     }
 
     itsListIterator.toBack();
@@ -257,7 +261,16 @@ MainWindow::MainWindow(QWidget *parent) :
 MainWindow::~MainWindow()
 {
     writeSettings();
-    xmlHistoryManager->writeHistory();
+    try {
+        xmlHistoryManager->writeHistory();
+    } catch (FileOpenException& e) {
+        QMessageBox::warning(this,
+                             "FileOpenException",
+                             e.message() + "\nHistory wasn't writen",
+                             QMessageBox::Ok);
+        exit(1);
+    }
+
     delete xmlHistoryManager;
     delete itsHistory;
 }
@@ -265,7 +278,7 @@ MainWindow::~MainWindow()
 void MainWindow::onButtonRozrahunok()
 {
     updateTime();
-    timer->start(1000);    
+    timer->start(DATE_UPDATE_TIME);
     bForward->setEnabled(false);
     bBackward->setEnabled(true);
     rozrahunok.setPilga(lePilga->text().toInt());
@@ -294,31 +307,34 @@ void MainWindow::onButtonRozrahunok()
 void MainWindow::writeDefaultSettings()
 {
     settings.clear();
-    settings.setValue("Pilga", BENEFIT_PERCENT);
-    settings.setValue("Limit", BENEFIT_LIMIT);
-    settings.setValue("TaryfDo150", TO_150_TARIFF);
-    settings.setValue("TaryfPonad150", OVER_150_TARIFF);
-    settings.setValue("TaryfPonad800", OVER_800_TARIFF);
+    settings.setValue("Benefit", BENEFIT_PERCENT);
+    settings.setValue("BenefitLimit", BENEFIT_LIMIT);
+    /// That wasn't gibberish convering float to Qstring
+    /* For int this don't needed */
+    settings.setValue("TariffTo150", QString::number(TO_150_TARIFF));
+    settings.setValue("TariffOver150", QString::number(OVER_150_TARIFF));
+    settings.setValue("TariffOver800", QString::number(OVER_800_TARIFF));
     settings.setValue("HistoryLimit", HISTORY_LIMIT);
 }
 
 void MainWindow::writeSettings()
 {
     settings.clear();
-    settings.setValue("Pilga", lePilga->text());
-    settings.setValue("Limit", leLimit->text());
-    settings.setValue("TaryfDo150", leTaryfDo150->text());
-    settings.setValue("TaryfPonad150", leTaryfPonad150->text());
-    settings.setValue("TaryfPonad800", leTaryfPonad800->text());
+    settings.setValue("Benefit", lePilga->text());
+    settings.setValue("BenefitLimit", leLimit->text());
+    settings.setValue("TariffTo150", leTaryfDo150->text());
+    settings.setValue("TariffOver150", leTaryfPonad150->text());
+    settings.setValue("TariffOver800", leTaryfPonad800->text());
+    settings.setValue("HistoryLimit", HISTORY_LIMIT);
 }
 
 void MainWindow::readSettings()
 {
-    lePilga->setText(settings.value("Pilga", BENEFIT_PERCENT).toString());
-    leLimit->setText(settings.value("Limit", BENEFIT_LIMIT).toString());
-    leTaryfDo150->setText(settings.value("TaryfDo150", TO_150_TARIFF).toString());
-    leTaryfPonad150->setText(settings.value("TaryfPonad150", OVER_150_TARIFF).toString());
-    leTaryfPonad800->setText(settings.value("TaryfPonad800", OVER_800_TARIFF).toString());
+    lePilga->setText(settings.value("Benefit", BENEFIT_PERCENT).toString());
+    leLimit->setText(settings.value("BenefitLimit", BENEFIT_LIMIT).toString());
+    leTaryfDo150->setText(settings.value("TariffTo150", TO_150_TARIFF).toString());
+    leTaryfPonad150->setText(settings.value("TariffOver150", OVER_150_TARIFF).toString());
+    leTaryfPonad800->setText(settings.value("TariffOver800", OVER_800_TARIFF).toString());
     itsHistoryLimit = settings.value("HistoryLimit", HISTORY_LIMIT).toInt();
 }
 

@@ -1,4 +1,5 @@
 QT += widgets
+TARGET = EnergyPro
 HEADERS += rastchet.h \
     mainwindow.h \
     IHistoryWriter.h \
