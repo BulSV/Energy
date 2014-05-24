@@ -98,6 +98,7 @@ MainWindow::MainWindow(QWidget *parent) :
     leTaryfPonad150->setTextMargins(2, 2, 2, 2);
     leTaryfPonad800->setTextMargins(2, 2, 2, 2);
 
+    updateTime();
     timer->start(1000);
 
     setLayout(new QGridLayout(this));
@@ -198,8 +199,11 @@ MainWindow::MainWindow(QWidget *parent) :
     // check existing config file
     QFile fileOfSettings;
     if(!fileOfSettings.exists("Energy.ini"))
-    {
+    {        
         writeDefaultSettings();
+        trayIcon->showMessage("FileOpenWarning",
+                              "The file Energy.ini does not exist.\nIt was created with default settings",
+                              QSystemTrayIcon::Warning);
     }
 
     // reading data from config file
@@ -261,8 +265,7 @@ MainWindow::~MainWindow()
 void MainWindow::onButtonRozrahunok()
 {
     updateTime();
-    timer->start(1000);
-    itsListIterator.toBack();
+    timer->start(1000);    
     bForward->setEnabled(false);
     bBackward->setEnabled(true);
     rozrahunok.setPilga(lePilga->text().toInt());
@@ -285,6 +288,7 @@ void MainWindow::onButtonRozrahunok()
     lVsego->setText(QString::number(rozrahunok.summaZagalna(), 'f', 2));
 
     writeHistory();
+    itsListIterator.toBack();
 }
 
 void MainWindow::writeDefaultSettings()

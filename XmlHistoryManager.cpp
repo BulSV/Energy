@@ -147,7 +147,7 @@ void XmlHistoryManager::writeHistory() throw(FileOpenException)
 
     if (!file.open(QIODevice::WriteOnly))
     {
-        throw FileOpenException("The file is in read only mode");
+        throw FileOpenException("The file " + itsFileName + " is in read only mode");
     }
 
     xmlWriter->setDevice(&file);
@@ -250,7 +250,7 @@ QList<QMap<QString, QString> >& XmlHistoryManager::readHistory() throw(FileOpenE
 
     if (!file.open(QIODevice::ReadOnly))
     {
-        throw FileOpenException("The file does not exist");
+        throw FileOpenException("The file " + itsFileName + " does not exist");
     }
 
     xmlReader->setDevice(&file);
