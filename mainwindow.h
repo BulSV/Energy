@@ -7,12 +7,20 @@
 #include <QPushButton>
 #include <QSettings>
 #include <QMutableListIterator>
+#include <QComboBox>
+#include <QTranslator>
 #include "rastchet.h"
 #include "XmlHistoryManager.h"
 
 class MainWindow : public QWidget
 {
 Q_OBJECT
+    int itsLanguage;
+
+    QDialog* languageDialog;
+    QComboBox* languageComboBox;
+    QPushButton* languagePushButton;
+
     QLabel *lPilga;
     QLineEdit *lePilga;
     QLineEdit *leLimit;
@@ -72,6 +80,8 @@ private slots:
     void updateTime();
     void backwardHistory();
     void forwardHistory();
+    void selectLanguageDialog();
+    void selectLanguage();
 
 public:
     explicit MainWindow(QWidget *parent = 0);
