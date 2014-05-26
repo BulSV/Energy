@@ -199,16 +199,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     grid->setSpacing(1);
 
-    layout()->addItem(grid);
-
-    // seting minimum size of the widget
-    this->setMaximumSize(minimumSize());
-
-    // setting fixed size of the widget
-//    this->layout()->setSizeConstraint(QLayout::SetFixedSize);
-
-    // setting widget in the center of the window
-    this->move(qApp->desktop()->availableGeometry(this).center()-this->rect().center());
+    layout()->addItem(grid);    
 
     lPilgovi->setFrameStyle(QFrame::Box);
     lPonad800->setFrameStyle(QFrame::Box);
@@ -238,6 +229,19 @@ MainWindow::MainWindow(QWidget *parent) :
     lePotochni->setStyleSheet("border: 1px solid black");
     leTaryfDo150->setStyleSheet("border: 1px solid black");
     leTaryfPonad150->setStyleSheet("border: 1px solid black");
+
+    // seting minimum size of the widget
+    this->setMaximumSize(minimumSize());
+
+    // setting fixed size of the widget
+//    this->layout()->setSizeConstraint(QLayout::SetFixedSize);
+
+    // setting widget in the center of the desktop
+    this->move(qApp->desktop()->availableGeometry(this).center() - this->rect().center());
+//    this->move(qApp->desktop()->availableGeometry().size().width()/2
+//               - this->sizeHint().width()/2,
+//               qApp->desktop()->availableGeometry().size().height()/2
+//               - this->sizeHint().height()/2);
 
     // to explicitly call the destructor!!!
 //    if (!testAttribute(Qt::WA_DeleteOnClose))
@@ -532,4 +536,11 @@ void MainWindow::setupLanguageDialog()
     default: languageComboBox->setCurrentIndex(1);
         break;
     }
+
+    // setting languageDialog in the center of the widget
+    languageDialog->move(qApp->desktop()->availableGeometry(this).center() - languageDialog->rect().center());
+//    languageDialog->move(qApp->desktop()->availableGeometry(this).size().width()/2
+//                   - languageDialog->sizeHint().width()/2,
+//                   qApp->desktop()->availableGeometry(this).size().height()/2
+//                   - languageDialog->sizeHint().height()/2);
 }
