@@ -420,7 +420,7 @@ void MainWindow::setupTime(int language)
         break;
     case 1: locale = QLocale(QLocale::Ukrainian, QLocale::Ukraine);
         break;
-    case 2: locale = QLocale(QLocale::Russian, QLocale::Russia);
+    case 2: locale = QLocale(QLocale::Russian, QLocale::RussianFederation);
         break;
     default: locale = QLocale(QLocale::Ukrainian, QLocale::Ukraine);
         break;
@@ -459,13 +459,17 @@ void MainWindow::forwardHistory()
 void MainWindow::selectLanguage(int language)
 {
     switch (language) {
-    case 0: translator.load(/*"mainwindow_en.qm", "."*/"");
+    /// text in English
+    case 0: translator.load("");
         break;
+    /// text in Ukrainian
     case 1: translator.load("mainwindow_ua.qm", ".");
         break;
+    /// text in Russian
     case 2: translator.load("mainwindow_ru.qm", ".");
         break;
     default:
+    /// text in Ukrainian
         translator.load("mainwindow_ua.qm", ".");
         break;
     }
@@ -498,6 +502,8 @@ void MainWindow::updateDialogText()
 void MainWindow::setupLanguageDialog()
 {
     languageDialog->setModal(true);
+    /// set only close button
+    languageDialog->setWindowFlags(Qt::WindowCloseButtonHint);
 
     QHBoxLayout* HLayout = new QHBoxLayout;
     HLayout->addWidget(languageComboBox);
@@ -506,6 +512,7 @@ void MainWindow::setupLanguageDialog()
     QStringList list;
     list << QString::fromUtf8("English") << QString::fromUtf8("Українська") << QString::fromUtf8("Русский");
     languageComboBox->addItems(list);
+
     languageDialog->setMaximumSize(minimumSize());
 
     switch (locale.language()) {
