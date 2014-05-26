@@ -15,11 +15,11 @@
 class MainWindow : public QWidget
 {
 Q_OBJECT
-    int itsLanguage;
+    QLocale locale;
+    QTranslator translator;
 
     QDialog* languageDialog;
     QComboBox* languageComboBox;
-    QPushButton* languagePushButton;
 
     QLabel *lPilga;
     QLineEdit *lePilga;
@@ -77,11 +77,14 @@ Q_OBJECT
     void writeHistory();
     void setFromHistory(QMap<QString, QString> map);
 private slots:
+    void setupTime(int language);
     void updateTime();
     void backwardHistory();
     void forwardHistory();
-    void selectLanguageDialog();
-    void selectLanguage();
+    void setupLanguageDialog();
+    void selectLanguage(int language);
+    void updateWidgetText();
+    void updateDialogText();
 
 public:
     explicit MainWindow(QWidget *parent = 0);

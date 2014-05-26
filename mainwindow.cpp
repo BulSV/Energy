@@ -20,23 +20,24 @@ const int DATE_UPDATE_TIME = 1000;
 
 MainWindow::MainWindow(QWidget *parent) :
         QWidget(parent, Qt::WindowCloseButtonHint | Qt::WindowMinimizeButtonHint),
-        itsLanguage(1),
-        lPilga(new QLabel(QObject::trUtf8("Benefit(%), limit (kWh)"), this)),
+        languageDialog(new QDialog()),
+        languageComboBox(new QComboBox(languageDialog)),
+        lPilga(new QLabel(this)),
         lePilga(new QLineEdit(this)),
         leLimit(new QLineEdit(this)),
         bBackward(new QPushButton(this)),
         lDate(new QLabel(this)),
         bForward(new QPushButton(this)),
-        lPotochni(new QLabel(QObject::trUtf8("Current readings, kWh"), this)),
-        lPoperedni(new QLabel(QObject::trUtf8("Previous\nreadings, kWh"), this)),
-        lSpozhyto(new QLabel(QObject::trUtf8("Consumed, kWh"), this)),
+        lPotochni(new QLabel(this)),
+        lPoperedni(new QLabel(this)),
+        lSpozhyto(new QLabel(this)),
         lSummaSpozhyto(new QLabel(this)),
-        lTaryf(new QLabel(QObject::trUtf8("\nTariff, UAH\n"), this)),
-        lSummaDoSplaty(new QLabel(QObject::trUtf8("Payment\namount, UAH"), this)),
-        lPilgovi(new QLabel(QObject::trUtf8("Benefits, kWh"), this)),
-        lDo150(new QLabel(QObject::trUtf8("to 150/250 kWh"), this)),
-        lPonad150(new QLabel(QObject::trUtf8("from 150/250 to 800 kWh"), this)),
-        lPonad800(new QLabel(QObject::trUtf8("over 800 kWh"), this)),
+        lTaryf(new QLabel(this)),
+        lSummaDoSplaty(new QLabel(this)),
+        lPilgovi(new QLabel(this)),
+        lDo150(new QLabel(this)),
+        lPonad150(new QLabel(this)),
+        lPonad800(new QLabel(this)),
         lSummaPilgovi(new QLabel(this)),
         lTaryfPilgovi(new QLabel(this)),
         lSummaDo150(new QLabel(this)),
@@ -46,7 +47,7 @@ MainWindow::MainWindow(QWidget *parent) :
         lSummaDoSplatyDo150(new QLabel(this)),
         lSummaDoSplatyPonad150(new QLabel(this)),
         lSummaDoSplatyPonad8000(new QLabel(this)),
-        lVsegoDosplaty(new QLabel(QObject::trUtf8("Total to pay, UAH"), this)),
+        lVsegoDosplaty(new QLabel(this)),
         lVsego(new QLabel(this)),
 
         lePotochni(new QLineEdit(this)),
@@ -55,7 +56,7 @@ MainWindow::MainWindow(QWidget *parent) :
         leTaryfPonad150(new QLineEdit(this)),
         leTaryfPonad800(new QLineEdit(this)),
 
-        bRozrahunok(new QPushButton(QObject::trUtf8("Calculation"), this)),
+        bRozrahunok(new QPushButton(this)),
 
         timer(new QTimer(this)),
 
@@ -64,15 +65,47 @@ MainWindow::MainWindow(QWidget *parent) :
         itsHistory(new QList<QMap<QString, QString> >()),
 
         itsListIterator(*itsHistory)
-{    
-    QTranslator translator;
-    translator.load("mainwindow_ua.qm", ".");
-    qApp->installTranslator(&translator);
+{
+    QSystemTrayIcon *trayIcon = new QSystemTrayIcon(this);
+
+    // check existing config file
+    QFile fileOfSettings;
+
+    if(!fileOfSettings.exists("Energy.ini"))
+    {
+        writeDefaultSettings();
+        trayIcon->showMessage(QObject::trUtf8("FileOpenWarning"),
+                              QObject::trUtf8("The config file Energy.ini does not exist\nIt was created with default settings"));
+    }
+
+    if(!settings.isWritable())
+    {
+        trayIcon->showMessage(QObject::trUtf8("FileOpenWarning"),
+                              QObject::trUtf8("The config file Energy.ini is in read only mode\nIt can't be changed"),
+                              QSystemTrayIcon::Warning);
+    }
+
+    // reading data from config file
+    readSettings();
 
     xmlHistoryManager = new XmlHistoryManager("history.xml", *itsHistory);
-    this->setWindowTitle(QObject::trUtf8("Calculation of electricity"));
 
-    QSystemTrayIcon *trayIcon = new QSystemTrayIcon(this);
+    // reading history
+    try{
+        itsHistory = &xmlHistoryManager->readHistory();
+    } catch (FileOpenException& e) {
+        trayIcon->showMessage("FileOpenException",
+                              e.message() + "\nIt will be created");
+    } catch (XmlReadException& e) {
+        trayIcon->showMessage("XmlReadException",
+                              e.message(),
+                              QSystemTrayIcon::Warning);
+    }
+
+    updateWidgetText();
+    setupLanguageDialog();
+    updateDialogText();
+
     trayIcon->setIcon(QPixmap(":/EnergyIcon.png"));
     trayIcon->setVisible(true);
     trayIcon->showMessage(QObject::trUtf8("Calculation of electricity"),
@@ -94,6 +127,8 @@ MainWindow::MainWindow(QWidget *parent) :
     lSummaDoSplaty->setMargin(4);
     lVsegoDosplaty->setAlignment(Qt::AlignRight);
     lVsegoDosplaty->setMargin(4);
+
+    lDate->setAlignment(Qt::AlignCenter);
 
     lPilgovi->setMargin(4);
     lDo150->setMargin(4);
@@ -202,40 +237,6 @@ MainWindow::MainWindow(QWidget *parent) :
 //        setAttribute(Qt::WA_DeleteOnClose, false);
     // false, not to give an error: "munmap_chunk(): invalid pointer"
 
-    // check existing config file
-    QFile fileOfSettings;
-
-    if(!fileOfSettings.exists("Energy.ini"))
-    {
-        writeDefaultSettings();
-        trayIcon->showMessage(QObject::trUtf8("FileOpenWarning"),
-                              QObject::trUtf8("The config file Energy.ini does not exist\nIt was created with default settings"));
-    }
-
-    if(!settings.isWritable())
-    {
-        trayIcon->showMessage(QObject::trUtf8("FileOpenWarning"),
-                              QObject::trUtf8("The config file Energy.ini is in read only mode\nIt can't be changed"),
-                              QSystemTrayIcon::Warning);
-    }
-
-//    fileOfSettings.close();
-
-    // reading data from config file
-    readSettings();
-
-    // reading history
-    try{
-        itsHistory = &xmlHistoryManager->readHistory();
-    } catch (FileOpenException& e) {
-        trayIcon->showMessage(QObject::trUtf8("FileOpenException"),
-                              QObject::trUtf8(QString(e.message() + "\nIt will be created").toLatin1().data()));
-    } catch (XmlReadException& e) {
-        trayIcon->showMessage(QObject::trUtf8("XmlReadException"),
-                              QObject::trUtf8(e.message().toLatin1().data()),
-                              QSystemTrayIcon::Warning);
-    }
-
     itsListIterator.toBack();
 
     bForward->setEnabled(false);
@@ -257,11 +258,15 @@ MainWindow::MainWindow(QWidget *parent) :
 
     connect(returnShortcut, SIGNAL(activated()), this, SLOT(onButtonRozrahunok()));
     connect(enterShortcut, SIGNAL(activated()), this, SLOT(onButtonRozrahunok()));
-    connect(f1Shortcut, SIGNAL(activated()), qApp, SLOT(aboutQt()));
-    connect(f2Shortcut, SIGNAL(activated()), this, SLOT(selectLanguageDialog()));
-    connect(languagePushButton, SIGNAL(clicked()), this, SLOT(selectLanguage()));
-
     connect(bRozrahunok, SIGNAL(clicked()), this, SLOT(onButtonRozrahunok()));
+
+    connect(f1Shortcut, SIGNAL(activated()), qApp, SLOT(aboutQt()));
+    connect(f2Shortcut, SIGNAL(activated()), languageDialog, SLOT(show()));
+
+    connect(languageComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(selectLanguage(int)));
+    connect(languageComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(setupTime(int)));
+    connect(languageComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(updateWidgetText()));
+    connect(languageComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(updateDialogText()));
 
     connect(timer, SIGNAL(timeout()), this, SLOT(updateTime()));
 
@@ -276,8 +281,8 @@ MainWindow::~MainWindow()
         xmlHistoryManager->writeHistory();
     } catch (FileOpenException& e) {
         QMessageBox::warning(this,
-                             QObject::trUtf8("FileOpenException"),
-                             QObject::trUtf8(QString(e.message() + "\nHistory wasn't writen").toLatin1().data()),
+                             "FileOpenException",
+                             e.message() + "\nHistory wasn't writen",
                              QMessageBox::Ok);
         exit(1);
     }
@@ -318,6 +323,7 @@ void MainWindow::onButtonRozrahunok()
 void MainWindow::writeDefaultSettings()
 {
     settings.clear();
+    settings.setValue("Langauge", 1);
     settings.setValue("Benefit", BENEFIT_PERCENT);
     settings.setValue("BenefitLimit", BENEFIT_LIMIT);
     /// That wasn't gibberish convering float to Qstring
@@ -331,6 +337,7 @@ void MainWindow::writeDefaultSettings()
 void MainWindow::writeSettings()
 {
     settings.clear();
+    settings.setValue("Language", languageComboBox->currentIndex());
     settings.setValue("Benefit", lePilga->text());
     settings.setValue("BenefitLimit", leLimit->text());
     settings.setValue("TariffTo150", leTaryfDo150->text());
@@ -341,6 +348,8 @@ void MainWindow::writeSettings()
 
 void MainWindow::readSettings()
 {
+    setupTime(settings.value("Language", 1).toInt());
+    selectLanguage(settings.value("Language", 1).toInt());
     lePilga->setText(settings.value("Benefit", BENEFIT_PERCENT).toString());
     leLimit->setText(settings.value("BenefitLimit", BENEFIT_LIMIT).toString());
     leTaryfDo150->setText(settings.value("TariffTo150", TO_150_TARIFF).toString());
@@ -403,12 +412,10 @@ void MainWindow::setFromHistory(QMap<QString, QString> map)
     lVsego->setText(map.value("invoicing"));
 }
 
-void MainWindow::updateTime()
+void MainWindow::setupTime(int language)
 {
-    QDateTime dateTime = QDateTime::currentDateTime();
-    QLocale locale;
     /// set the locale you want here
-    switch(itsLanguage) {
+    switch(language) {
     case 0: locale = QLocale(QLocale::English, QLocale::UnitedStates);
         break;
     case 1: locale = QLocale(QLocale::Ukrainian, QLocale::Ukraine);
@@ -419,9 +426,12 @@ void MainWindow::updateTime()
         break;
     }
 
-    QString dateTimeString = locale.toString(dateTime, "ddd hh:mm:ss\ndd MMM yyyy");
-//    lDate->setText(QDateTime::currentDateTime().toString("ddd hh:mm:ss\ndd MMM yyyy"));
-    lDate->setText(dateTimeString);
+    updateTime();
+}
+
+void MainWindow::updateTime()
+{
+    lDate->setText(locale.toString(QDateTime::currentDateTime(), "ddd hh:mm:ss\ndd MMM yyyy"));
 }
 
 void MainWindow::backwardHistory()
@@ -446,41 +456,66 @@ void MainWindow::forwardHistory()
     }
 }
 
-void MainWindow::selectLanguage()
+void MainWindow::selectLanguage(int language)
 {
-    QTranslator translator;
-
-    switch (languageComboBox->currentIndex()) {
-    case 0: itsLanguage = 0;
+    switch (language) {
+    case 0: translator.load(/*"mainwindow_en.qm", "."*/"");
         break;
-    case 1: itsLanguage = 1;
+    case 1: translator.load("mainwindow_ua.qm", ".");
+        break;
+    case 2: translator.load("mainwindow_ru.qm", ".");
+        break;
+    default:
         translator.load("mainwindow_ua.qm", ".");
         break;
-    case 2: itsLanguage = 2;
-        translator.load("mainwindow_ru.qm", ".");
-        break;
-    default: itsLanguage = 1;
-        break;
     }
-
-    languageDialog->close();
 
     qApp->installTranslator(&translator);
 }
 
-void MainWindow::selectLanguageDialog()
+void MainWindow::updateWidgetText()
 {
-    languageDialog = new QDialog(this);
-    languageComboBox = new QComboBox(languageDialog);
-    languagePushButton = new QPushButton(QString::fromUtf8("OK"));
+    lPilga->setText(QObject::trUtf8("Benefit(%), limit (kWh)"));
+    lPotochni->setText(QObject::trUtf8("Current readings, kWh"));
+    lPoperedni->setText(QObject::trUtf8("Previous\nreadings, kWh"));
+    lSpozhyto->setText(QObject::trUtf8("Consumed, kWh"));
+    lTaryf->setText(QObject::trUtf8("\nTariff, UAH\n"));
+    lSummaDoSplaty->setText(QObject::trUtf8("Payment\namount, UAH"));
+    lPilgovi->setText(QObject::trUtf8("Benefits, kWh"));
+    lDo150->setText(QObject::trUtf8("to 150/250 kWh"));
+    lPonad150->setText(QObject::trUtf8("from 150/250 to 800 kWh"));
+    lPonad800->setText(QObject::trUtf8("over 800 kWh"));
+    lVsegoDosplaty->setText(QObject::trUtf8("Total to pay, UAH"));
+    bRozrahunok->setText(QObject::trUtf8("Calculation"));
+    this->setWindowTitle(QObject::trUtf8("Calculation of electricity"));
+}
+
+void MainWindow::updateDialogText()
+{
+    languageDialog->setWindowTitle(QObject::trUtf8("Language Selection"));
+}
+
+void MainWindow::setupLanguageDialog()
+{
+    languageDialog->setModal(true);
 
     QHBoxLayout* HLayout = new QHBoxLayout;
     HLayout->addWidget(languageComboBox);
-    HLayout->addWidget(languagePushButton);
     languageDialog->setLayout(HLayout);
 
     QStringList list;
     list << QString::fromUtf8("English") << QString::fromUtf8("Українська") << QString::fromUtf8("Русский");
     languageComboBox->addItems(list);
-    languageDialog->show();
+    languageDialog->setMaximumSize(minimumSize());
+
+    switch (locale.language()) {
+    case QLocale::English: languageComboBox->setCurrentIndex(0);
+        break;
+    case QLocale::Ukrainian: languageComboBox->setCurrentIndex(1);
+        break;
+    case QLocale::Russian: languageComboBox->setCurrentIndex(2);
+        break;
+    default: languageComboBox->setCurrentIndex(1);
+        break;
+    }
 }
