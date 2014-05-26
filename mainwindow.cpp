@@ -18,6 +18,13 @@ const float OVER_800_TARIFF = 0.9576;
 const int HISTORY_LIMIT = 100;
 const int DATE_UPDATE_TIME = 1000;
 
+enum LANGUAGES
+{
+    ENGLISH,
+    UKRAINIAN,
+    RUSSIAN
+};
+
 MainWindow::MainWindow(QWidget *parent) :
         QWidget(parent, Qt::WindowCloseButtonHint | Qt::WindowMinimizeButtonHint),
         languageDialog(new QDialog()),
@@ -416,11 +423,11 @@ void MainWindow::setupTime(int language)
 {
     /// set the locale you want here
     switch(language) {
-    case 0: locale = QLocale(QLocale::English, QLocale::UnitedStates);
+    case ENGLISH: locale = QLocale(QLocale::English, QLocale::UnitedStates);
         break;
-    case 1: locale = QLocale(QLocale::Ukrainian, QLocale::Ukraine);
+    case UKRAINIAN: locale = QLocale(QLocale::Ukrainian, QLocale::Ukraine);
         break;
-    case 2: locale = QLocale(QLocale::Russian, QLocale::RussianFederation);
+    case RUSSIAN: locale = QLocale(QLocale::Russian, QLocale::RussianFederation);
         break;
     default: locale = QLocale(QLocale::Ukrainian, QLocale::Ukraine);
         break;
@@ -460,13 +467,13 @@ void MainWindow::selectLanguage(int language)
 {
     switch (language) {
     /// text in English
-    case 0: translator.load("");
+    case ENGLISH: translator.load("");
         break;
     /// text in Ukrainian
-    case 1: translator.load("mainwindow_ua.qm", ".");
+    case UKRAINIAN: translator.load("mainwindow_ua.qm", ".");
         break;
     /// text in Russian
-    case 2: translator.load("mainwindow_ru.qm", ".");
+    case RUSSIAN: translator.load("mainwindow_ru.qm", ".");
         break;
     default:
     /// text in Ukrainian
