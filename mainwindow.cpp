@@ -231,7 +231,7 @@ MainWindow::MainWindow(QWidget *parent) :
     leTaryfPonad150->setStyleSheet("border: 1px solid black");
 
     /// seting minimum size of the widget
-    this->setMinimumWidth(466);
+    this->setMinimumWidth(503);
     this->setMinimumHeight(224);
     this->setMaximumSize(minimumSize());
 
