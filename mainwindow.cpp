@@ -199,7 +199,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     grid->setSpacing(1);
 
-    layout()->addItem(grid);    
+    layout()->addItem(grid);
 
     lPilgovi->setFrameStyle(QFrame::Box);
     lPonad800->setFrameStyle(QFrame::Box);
@@ -231,6 +231,8 @@ MainWindow::MainWindow(QWidget *parent) :
     leTaryfPonad150->setStyleSheet("border: 1px solid black");
 
     // seting minimum size of the widget
+    this->setMinimumWidth(466);
+    this->setMinimumHeight(224);
     this->setMaximumSize(minimumSize());
 
     // setting fixed size of the widget
@@ -524,6 +526,9 @@ void MainWindow::setupLanguageDialog()
     list << QString::fromUtf8("English") << QString::fromUtf8("Українська") << QString::fromUtf8("Русский");
     languageComboBox->addItems(list);
 
+    // seting minimum size of the dialog
+    languageDialog->setMinimumWidth(200);
+    languageDialog->setMinimumHeight(42);
     languageDialog->setMaximumSize(minimumSize());
 
     switch (locale.language()) {
@@ -539,8 +544,4 @@ void MainWindow::setupLanguageDialog()
 
     // setting languageDialog in the center of the widget
     languageDialog->move(qApp->desktop()->availableGeometry(this).center() - languageDialog->rect().center());
-//    languageDialog->move(qApp->desktop()->availableGeometry(this).size().width()/2
-//                   - languageDialog->sizeHint().width()/2,
-//                   qApp->desktop()->availableGeometry(this).size().height()/2
-//                   - languageDialog->sizeHint().height()/2);
 }
