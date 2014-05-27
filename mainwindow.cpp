@@ -67,7 +67,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
         timer(new QTimer(this)),
 
-        settings("Energy.ini", QSettings::IniFormat),
+        settings("EnergyPro.ini", QSettings::IniFormat),
 
         itsHistory(new QList<QMap<QString, QString> >()),
 
@@ -75,10 +75,10 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     QSystemTrayIcon *trayIcon = new QSystemTrayIcon(this);
 
-    // check existing config file
+    /// check existing config file
     QFile fileOfSettings;
 
-    if(!fileOfSettings.exists("Energy.ini"))
+    if(!fileOfSettings.exists("EnergyPro.ini"))
     {
         writeDefaultSettings();
         trayIcon->showMessage(QObject::trUtf8("FileOpenWarning"),
@@ -92,12 +92,12 @@ MainWindow::MainWindow(QWidget *parent) :
                               QSystemTrayIcon::Warning);
     }
 
-    // reading data from config file
+    /// reading data from config file
     readSettings();
 
     xmlHistoryManager = new XmlHistoryManager("history.xml", *itsHistory);
 
-    // reading history
+    /// reading history
     try{
         itsHistory = &xmlHistoryManager->readHistory();
     } catch (FileOpenException& e) {
@@ -230,25 +230,13 @@ MainWindow::MainWindow(QWidget *parent) :
     leTaryfDo150->setStyleSheet("border: 1px solid black");
     leTaryfPonad150->setStyleSheet("border: 1px solid black");
 
-    // seting minimum size of the widget
+    /// seting minimum size of the widget
     this->setMinimumWidth(466);
     this->setMinimumHeight(224);
     this->setMaximumSize(minimumSize());
 
-    // setting fixed size of the widget
-//    this->layout()->setSizeConstraint(QLayout::SetFixedSize);
-
-    // setting widget in the center of the desktop
+    /// setting widget in the center of the desktop
     this->move(qApp->desktop()->availableGeometry(this).center() - this->rect().center());
-//    this->move(qApp->desktop()->availableGeometry().size().width()/2
-//               - this->sizeHint().width()/2,
-//               qApp->desktop()->availableGeometry().size().height()/2
-//               - this->sizeHint().height()/2);
-
-    // to explicitly call the destructor!!!
-//    if (!testAttribute(Qt::WA_DeleteOnClose))
-//        setAttribute(Qt::WA_DeleteOnClose, false);
-    // false, not to give an error: "munmap_chunk(): invalid pointer"
 
     itsListIterator.toBack();
 
@@ -526,22 +514,22 @@ void MainWindow::setupLanguageDialog()
     list << QString::fromUtf8("English") << QString::fromUtf8("Українська") << QString::fromUtf8("Русский");
     languageComboBox->addItems(list);
 
-    // seting minimum size of the dialog
+    /// seting minimum size of the dialog
     languageDialog->setMinimumWidth(200);
     languageDialog->setMinimumHeight(42);
     languageDialog->setMaximumSize(minimumSize());
 
     switch (locale.language()) {
-    case QLocale::English: languageComboBox->setCurrentIndex(0);
+    case QLocale::English: languageComboBox->setCurrentIndex(ENGLISH);
         break;
-    case QLocale::Ukrainian: languageComboBox->setCurrentIndex(1);
+    case QLocale::Ukrainian: languageComboBox->setCurrentIndex(UKRAINIAN);
         break;
-    case QLocale::Russian: languageComboBox->setCurrentIndex(2);
+    case QLocale::Russian: languageComboBox->setCurrentIndex(RUSSIAN);
         break;
-    default: languageComboBox->setCurrentIndex(1);
+    default: languageComboBox->setCurrentIndex(UKRAINIAN);
         break;
     }
 
-    // setting languageDialog in the center of the widget
+    /// setting languageDialog in the center of the widget
     languageDialog->move(qApp->desktop()->availableGeometry(this).center() - languageDialog->rect().center());
 }
