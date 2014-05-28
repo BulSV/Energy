@@ -231,8 +231,8 @@ MainWindow::MainWindow(QWidget *parent) :
     leTaryfPonad150->setStyleSheet("border: 1px solid black");
 
     /// seting minimum size of the widget
-    this->setMinimumWidth(503);
-    this->setMinimumHeight(224);
+//    this->setMinimumWidth(503);
+//    this->setMinimumHeight(224);
     this->setMaximumSize(minimumSize());
 
     /// setting widget in the center of the desktop
@@ -515,8 +515,8 @@ void MainWindow::setupLanguageDialog()
     languageComboBox->addItems(list);
 
     /// seting minimum size of the dialog
-    languageDialog->setMinimumWidth(200);
-    languageDialog->setMinimumHeight(42);
+    languageDialog->setMinimumWidth(250);
+    languageDialog->setMinimumHeight(50);
     languageDialog->setMaximumSize(minimumSize());
 
     switch (locale.language()) {
@@ -531,5 +531,5 @@ void MainWindow::setupLanguageDialog()
     }
 
     /// setting languageDialog in the center of the widget
-    languageDialog->move(qApp->desktop()->availableGeometry(this).center() - languageDialog->rect().center());
+    languageDialog->move(qApp->desktop()->availableGeometry(this).center());
 }
