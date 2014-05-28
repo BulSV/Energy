@@ -18,3 +18,4 @@ SOURCES += rastchet.cpp \
     FileOpenException.cpp \
     XmlReadException.cpp
 RESOURCES += EnergyIcon.qrc
+RC_FILE += EnergyIcon.rc
