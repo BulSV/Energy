@@ -1,6 +1,6 @@
 QT += widgets
 TARGET = EnergyPro
-HEADERS += rastchet.h \
+HEADERS += payment.h \
     mainwindow.h \
     IHistoryWriter.h \
     IHistoryReader.h \
@@ -8,7 +8,7 @@ HEADERS += rastchet.h \
     XmlHistoryManager.h \
     FileOpenException.h \
     XmlReadException.h
-SOURCES += rastchet.cpp \
+SOURCES += payment.cpp \
     mainwindow.cpp \
     main.cpp \
     IHistoryWriter.cpp \

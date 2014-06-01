@@ -9,7 +9,7 @@
 #include <QMutableListIterator>
 #include <QComboBox>
 #include <QTranslator>
-#include "rastchet.h"
+#include "payment.h"
 #include "XmlHistoryManager.h"
 
 class MainWindow : public QWidget
@@ -21,43 +21,43 @@ Q_OBJECT
     QDialog* languageDialog;
     QComboBox* languageComboBox;
 
-    QLabel *lPilga;
-    QLineEdit *lePilga;
+    QLabel *lBenefitLimit;
+    QLineEdit *leBenefit;
     QLineEdit *leLimit;
 
     QPushButton *bBackward;
     QLabel *lDate;
     QPushButton *bForward;
 
-    QLabel *lPotochni;
-    QLabel *lPoperedni;
-    QLabel *lSpozhyto;
-    QLabel *lSummaSpozhyto;
-    QLabel *lTaryf;
-    QLabel *lSummaDoSplaty;
-    QLabel *lPilgovi;
-    QLabel *lDo150;
-    QLabel *lPonad150;
-    QLabel *lPonad800;
-    QLabel *lSummaPilgovi;
-    QLabel *lTaryfPilgovi;
-    QLabel *lSummaDo150;
-    QLabel *lSummaPonad150;
-    QLabel *lSummaPonad800;
-    QLabel *lSummaDoSplatyPilgovi;
-    QLabel *lSummaDoSplatyDo150;
-    QLabel *lSummaDoSplatyPonad150;
-    QLabel *lSummaDoSplatyPonad8000;
-    QLabel *lVsegoDosplaty;
-    QLabel *lVsego;
+    QLabel *lCurrent;
+    QLabel *lPrevious;
+    QLabel *lConsumed;
+    QLabel *lAmountConsumed;
+    QLabel *lTariff;
+    QLabel *lAmountPayment;
+    QLabel *lBenefit;
+    QLabel *lTo150;
+    QLabel *lOver150;
+    QLabel *lOver800;
+    QLabel *lAmountBenefit;
+    QLabel *lTariffBenefit;
+    QLabel *lAmountTo150;
+    QLabel *lAmountOver150;
+    QLabel *lAmountOver800;
+    QLabel *lAmountPaymentBenefit;
+    QLabel *lAmountPaymentTo150;
+    QLabel *lAmountPaymentOver150;
+    QLabel *lAmountPaymentOver800;
+    QLabel *lTotalPayment;
+    QLabel *lTotal;
 
-    QLineEdit *lePotochni;
-    QLineEdit *lePoperedni;
-    QLineEdit *leTaryfDo150;
-    QLineEdit *leTaryfPonad150;
-    QLineEdit *leTaryfPonad800;
+    QLineEdit *leCurrent;
+    QLineEdit *lePrevious;
+    QLineEdit *leTariffTo150;
+    QLineEdit *leTariffOver150;
+    QLineEdit *leTariffOver800;
 
-    QPushButton *bRozrahunok;
+    QPushButton *bPayment;
 
     XmlHistoryManager* xmlHistoryManager;
 
@@ -65,7 +65,7 @@ Q_OBJECT
 
     QSettings settings;
 
-    Rastchet rozrahunok;
+    Payment payment;
 
     QList<QMap<QString, QString> >* itsHistory;
     int itsHistoryLimit;
@@ -93,7 +93,7 @@ public:
 signals:
 
 public slots:
-    void onButtonRozrahunok();
+    void onButtonPayment();
 
 };
 
