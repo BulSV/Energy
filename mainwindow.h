@@ -59,7 +59,7 @@ Q_OBJECT
 
     QPushButton *bPayment;
 
-    XmlHistoryManager* xmlHistoryManager;
+    IHistoryManager* xmlHistoryManager;
 
     QTimer *timer;
 
