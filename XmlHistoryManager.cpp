@@ -22,6 +22,10 @@ QMap<QString, QString> XmlHistoryManager::parseRecord(QXmlStreamReader *xmlReade
     while(!(xmlReader->tokenType() == QXmlStreamReader::EndElement
             && xmlReader->name() == "record"))
     {
+        if(xmlReader->name() == "language")
+        {
+            addElementDataToMap(xmlReader, record);
+        }
         if(xmlReader->name() == "date")
         {
             addElementDataToMap(xmlReader, record);
@@ -158,6 +162,10 @@ void XmlHistoryManager::writeHistory() throw(FileOpenException)
     {
         xmlWriter->writeStartElement("record");
         xmlWriter->writeAttribute("id", QString::number(i));
+
+        xmlWriter->writeStartElement("language");
+        xmlWriter->writeCharacters(itsHistory->at(i).value("language"));
+        xmlWriter->writeEndElement();
 
         xmlWriter->writeStartElement("date");
         xmlWriter->writeCharacters(itsHistory->at(i).value("date"));

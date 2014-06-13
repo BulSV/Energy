@@ -12,11 +12,19 @@
 #include "payment.h"
 #include "XmlHistoryManager.h"
 
+enum LANGUAGES
+{
+    ENGLISH,
+    UKRAINIAN,
+    RUSSIAN
+};
+
 class MainWindow : public QWidget
 {
 Q_OBJECT
     QLocale locale;
     QTranslator translator;
+    LANGUAGES currentLanguage;
 
     QDialog* languageDialog;
     QComboBox* languageComboBox;
@@ -76,13 +84,16 @@ Q_OBJECT
     void readSettings();
     void writeHistory();
     void setFromHistory(QMap<QString, QString> map);
+    void setupTime();
+    QString toString(LANGUAGES language);
+    LANGUAGES fromString(QString language);
 private slots:
-    void setupTime(int language);
     void updateTime();
+    void updateLanguage(int language);
     void backwardHistory();
     void forwardHistory();
     void setupLanguageDialog();
-    void selectLanguage(int language);
+    void setupLanguage();
     void updateWidgetText();
     void updateDialogText();
 

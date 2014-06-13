@@ -18,13 +18,6 @@ const float OVER_800_TARIFF = 0.9576;
 const int HISTORY_LIMIT = 100;
 const int DATE_UPDATE_TIME = 1000;
 
-enum LANGUAGES
-{
-    ENGLISH,
-    UKRAINIAN,
-    RUSSIAN
-};
-
 MainWindow::MainWindow(QWidget *parent) :
         QWidget(parent, Qt::WindowCloseButtonHint | Qt::WindowMinimizeButtonHint),
         languageDialog(new QDialog()),
@@ -264,8 +257,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(f1Shortcut, SIGNAL(activated()), qApp, SLOT(aboutQt()));
     connect(f2Shortcut, SIGNAL(activated()), languageDialog, SLOT(show()));
 
-    connect(languageComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(selectLanguage(int)));
-    connect(languageComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(setupTime(int)));
+    connect(languageComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(updateLanguage(int)));
     connect(languageComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(updateWidgetText()));
     connect(languageComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(updateDialogText()));
 
@@ -349,8 +341,9 @@ void MainWindow::writeSettings()
 
 void MainWindow::readSettings()
 {
-    setupTime(settings.value("Language", 1).toInt());
-    selectLanguage(settings.value("Language", 1).toInt());
+    currentLanguage = (LANGUAGES)settings.value("Language", 1).toInt();
+    setupTime();
+    setupLanguage();
     leBenefit->setText(settings.value("Benefit", BENEFIT_PERCENT).toString());
     leLimit->setText(settings.value("BenefitLimit", BENEFIT_LIMIT).toString());
     leTariffTo150->setText(settings.value("TariffTo150", TO_150_TARIFF).toString());
@@ -363,6 +356,7 @@ void MainWindow::writeHistory()
 {
     QMap<QString, QString> map;
 
+    map.insert("language", toString(currentLanguage));
     map.insert("date", lDate->text());
     map.insert("benefit", leBenefit->text());
     map.insert("limit", leLimit->text());
@@ -392,6 +386,10 @@ void MainWindow::writeHistory()
 
 void MainWindow::setFromHistory(QMap<QString, QString> map)
 {
+    currentLanguage = fromString(map.value("language"));
+    setupTime();
+    setupLanguage();
+    updateWidgetText();
     lDate->setText(map.value("date"));
     leBenefit->setText(map.value("benefit"));
     leLimit->setText(map.value("limit"));
@@ -413,10 +411,10 @@ void MainWindow::setFromHistory(QMap<QString, QString> map)
     lTotal->setText(map.value("invoicing"));
 }
 
-void MainWindow::setupTime(int language)
+void MainWindow::setupTime()
 {
     /// set the locale you want here
-    switch(language) {
+    switch(currentLanguage) {
     case ENGLISH: locale = QLocale(QLocale::English, QLocale::UnitedStates);
         break;
     case UKRAINIAN: locale = QLocale(QLocale::Ukrainian, QLocale::Ukraine);
@@ -430,9 +428,55 @@ void MainWindow::setupTime(int language)
     updateTime();
 }
 
+QString MainWindow::toString(LANGUAGES language)
+{
+    QString languageString = "";
+
+    switch(language)
+    {
+    case ENGLISH: languageString = "ENGLISH";
+        break;
+    case UKRAINIAN: languageString = "UKRAINIAN";
+        break;
+    case RUSSIAN: languageString = "RUSSIAN";
+        break;
+    default: languageString = "UKRAINIAN";
+        break;
+    }
+
+    return languageString;
+}
+
+LANGUAGES MainWindow::fromString(QString language)
+{
+    if(language == "ENGLISH")
+    {
+        return ENGLISH;
+    }
+    if(language == "UKRAINIAN")
+    {
+        return UKRAINIAN;
+    }
+    if(language == "RUSSIAN")
+    {
+        return RUSSIAN;
+    }
+    else
+    {
+        return UKRAINIAN;
+    }
+}
+
 void MainWindow::updateTime()
 {
     lDate->setText(locale.toString(QDateTime::currentDateTime(), "ddd hh:mm:ss\ndd MMM yyyy"));
+}
+
+void MainWindow::updateLanguage(int language)
+{
+    currentLanguage = (LANGUAGES)language;
+    setupTime();
+    setupLanguage();
 }
 
 void MainWindow::backwardHistory()
@@ -457,9 +501,9 @@ void MainWindow::forwardHistory()
     }
 }
 
-void MainWindow::selectLanguage(int language)
+void MainWindow::setupLanguage()
 {
-    switch (language) {
+    switch (currentLanguage) {
     /// text in English
     case ENGLISH: translator.load("");
         break;
