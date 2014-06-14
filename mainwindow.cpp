@@ -10,6 +10,8 @@
 #include <QMessageBox>
 #include "mainwindow.h"
 
+#include <QDebug>
+
 const int BENEFIT_PERCENT = 0;
 const int BENEFIT_LIMIT = 0;
 const float TO_150_TARIFF = 0.2802;
@@ -17,6 +19,9 @@ const float OVER_150_TARIFF = 0.3648;
 const float OVER_800_TARIFF = 0.9576;
 const int HISTORY_LIMIT = 100;
 const int DATE_UPDATE_TIME = 1000;
+const float LIMIT_TO_150_TARIFF = 150.0;
+const float LIMIT_TO_800_TARIFF = 800.0;
+const float LIMIT_OVER_800_TARIFF = 0.0;
 
 MainWindow::MainWindow(QWidget *parent) :
         QWidget(parent, Qt::WindowCloseButtonHint | Qt::WindowMinimizeButtonHint),
@@ -290,24 +295,47 @@ void MainWindow::onButtonPayment()
     timer->start(DATE_UPDATE_TIME);
     bForward->setEnabled(false);
     bBackward->setEnabled(true);
-    payment.setBenefit(leBenefit->text().toInt());
-    payment.setLimit(leLimit->text().toInt());
-    payment.setTariffTo150(leTariffTo150->text().toFloat());
-    payment.setTariffOver150(leTariffOver150->text().toFloat());
-    payment.setTariffOver800(leTariffOver800->text().toDouble());
-    payment.setCurrent(leCurrent->text().toInt());
-    payment.setPrevious(lePrevious->text().toInt());
-    lTariffBenefit->setText(QString::number(payment.tariffBenefit(), 'f', 4));
-    lAmountConsumed->setText(QString::number(payment.consumed()));
-    lAmountBenefit->setText(QString::number(payment.consumedBenefit()));
-    lAmountTo150->setText(QString::number(payment.consumedTo150()));
-    lAmountOver150->setText(QString::number(payment.consumedOver150()));
-    lAmountOver800->setText(QString::number(payment.consumedOver800()));
-    lAmountPaymentBenefit->setText(QString::number(payment.amountBenefit(), 'f', 2));
-    lAmountPaymentTo150->setText(QString::number(payment.amountTo150(), 'f', 2));
-    lAmountPaymentOver150->setText(QString::number(payment.amountOver150(), 'f', 2));
-    lAmountPaymentOver800->setText(QString::number(payment.amountOver800(), 'f', 2));
-    lTotal->setText(QString::number(payment.amountTotal(), 'f', 2));
+
+    qDebug() << "111111111111111111";
+
+    payment = new Payment(leCurrent->text().toInt(), lePrevious->text().toInt());
+
+    qDebug() << "222222222222222222";
+
+    benefitPayment = new BenefitPayment(payment,
+                                        leLimit->text().toInt(),
+                                        leTariffTo150->text().toFloat(),
+                                        leBenefit->text().toInt());
+    to150Payment = new AbstractPartPayment(payment,
+                                           LIMIT_TO_150_TARIFF,
+                                           leTariffTo150->text().toFloat());
+    to800Payment = new AbstractPartPayment(payment,
+                                           LIMIT_TO_800_TARIFF,
+                                           leTariffOver150->text().toFloat());
+    over800Payment = new AbstractPartPayment(payment,
+                                             LIMIT_OVER_800_TARIFF,
+                                             leTariffOver800->text().toDouble());
+    qDebug() << "333333333333333333";
+
+    payment->addPartPayment(benefitPayment);
+    qDebug() << "!!!!!!!!!!!!!!!!!!";
+    payment->addPartPayment(to150Payment);
+    payment->addPartPayment(to800Payment);
+    payment->addPartPayment(over800Payment);
+
+    qDebug() << "444444444444444444";
+
+    lTariffBenefit->setText(QString::number(payment->partsPayment()->at(0)->tariff(), 'f', 4));
+    lAmountConsumed->setText(QString::number(payment->consumed()));
+    lAmountBenefit->setText(QString::number(payment->partsPayment()->at(0)->consumed()));
+    lAmountTo150->setText(QString::number(payment->partsPayment()->at(1)->consumed()));
+    lAmountOver150->setText(QString::number(payment->partsPayment()->at(2)->consumed()));
+    lAmountOver800->setText(QString::number(payment->partsPayment()->at(3)->consumed()));
+    lAmountPaymentBenefit->setText(QString::number(payment->partsPayment()->at(0)->amount(), 'f', 2));
+    lAmountPaymentTo150->setText(QString::number(payment->partsPayment()->at(1)->amount(), 'f', 2));
+    lAmountPaymentOver150->setText(QString::number(payment->partsPayment()->at(2)->amount(), 'f', 2));
+    lAmountPaymentOver800->setText(QString::number(payment->partsPayment()->at(3)->amount(), 'f', 2));
+    lTotal->setText(QString::number(payment->amountTotal(), 'f', 2));
 
     writeHistory();
     itsListIterator.toBack();

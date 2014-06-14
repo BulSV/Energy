@@ -1,49 +1,30 @@
 #ifndef PAYMENT_H
 #define PAYMENT_H
 
-#include <QObject>
+#include "IPayment.h"
+#include "AbstractPartPayment.h"
+#include <QList>
 
-class Payment
+class Payment: public IPayment
 {
-    int itsBenefit;
-    int itsLimit;
     int itsCurrent;
     int itsPrevious;
-    float itsTariffTo150;
-    float itsTariffOver150;
-    float itsTariffOver800;
-
+    QList<AbstractPartPayment*>* itsPartsPayment;
 public:
     Payment();
-    Payment(int benefit,
-            int limit,
-            int current,
+    Payment(int current,
+            int previous);
+    Payment(int current,
             int previous,
-            float tariffTo150,
-            float tariffOver150,
-            float tariffOver800);
+            QList<AbstractPartPayment*>* partPayment);
+    virtual ~Payment();
 
-    int consumed() const;
-    int consumedBenefit() const;
-    int consumedTo150() const;
-    int consumedOver150() const;
-    int consumedOver800() const;
-    float tariffBenefit() const;
-    float tariffTo150() const;
-    float tariffOver150() const;
-    float tariffOver800() const;
-    float amountBenefit() const;
-    float amountTo150() const;
-    float amountOver150() const;
-    float amountOver800() const;
-    float amountTotal() const;
-    void setBenefit(int benefit);
-    void setLimit(int limit);
-    void setTariffTo150(float tariffTo150);
-    void setTariffOver150(float tariffOver150);
-    void setTariffOver800(float tariffOver800);
+    void addPartPayment(AbstractPartPayment* partPayment);
+    virtual int consumed() const;
+    float amountTotal() const;    
     void setCurrent(int current);
     void setPrevious(int previous);
+    QList<AbstractPartPayment*>* partsPayment() const;
 };
 
 #endif // PAYMENT_H

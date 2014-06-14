@@ -10,6 +10,8 @@
 #include <QComboBox>
 #include <QTranslator>
 #include "payment.h"
+#include "BenefitPayment.h"
+#include "AbstractPartPayment.h"
 #include "XmlHistoryManager.h"
 
 enum LANGUAGES
@@ -73,7 +75,11 @@ Q_OBJECT
 
     QSettings settings;
 
-    Payment payment;
+    Payment* payment;
+    BenefitPayment* benefitPayment;
+    AbstractPartPayment* to150Payment;
+    AbstractPartPayment* to800Payment;
+    AbstractPartPayment* over800Payment;
 
     QList<QMap<QString, QString> >* itsHistory;
     int itsHistoryLimit;

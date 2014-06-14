@@ -7,7 +7,10 @@ HEADERS += payment.h \
     IHistoryManager.h \
     XmlHistoryManager.h \
     FileOpenException.h \
-    XmlReadException.h
+    XmlReadException.h \
+    IPayment.h \
+    AbstractPartPayment.h \
+    BenefitPayment.h
 SOURCES += payment.cpp \
     mainwindow.cpp \
     main.cpp \
@@ -16,6 +19,9 @@ SOURCES += payment.cpp \
     IHistoryManager.cpp \
     XmlHistoryManager.cpp \
     FileOpenException.cpp \
-    XmlReadException.cpp
+    XmlReadException.cpp \
+    IPayment.cpp \
+    AbstractPartPayment.cpp \
+    BenefitPayment.cpp
 RESOURCES += EnergyIcon.qrc
 RC_FILE += EnergyIcon.rc
