@@ -1,7 +1,7 @@
 QT += widgets
 TARGET = EnergyPro
-HEADERS += payment.h \
-    mainwindow.h \
+HEADERS += Payment.h \
+    MainWindow.h \
     IHistoryWriter.h \
     IHistoryReader.h \
     IHistoryManager.h \
@@ -11,8 +11,8 @@ HEADERS += payment.h \
     IPayment.h \
     AbstractPartPayment.h \
     BenefitPayment.h
-SOURCES += payment.cpp \
-    mainwindow.cpp \
+SOURCES += Payment.cpp \
+    MainWindow.cpp \
     main.cpp \
     IHistoryWriter.cpp \
     IHistoryReader.cpp \

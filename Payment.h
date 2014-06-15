@@ -3,10 +3,12 @@
 
 #include "IPayment.h"
 #include "AbstractPartPayment.h"
+#include <QObject>
 #include <QList>
 
-class Payment: public IPayment
+class Payment: public QObject, public IPayment
 {
+    Q_OBJECT
     int itsCurrent;
     int itsPrevious;
     QList<AbstractPartPayment*>* itsPartsPayment;

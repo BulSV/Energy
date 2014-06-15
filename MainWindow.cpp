@@ -8,9 +8,7 @@
 #include <QDateTime>
 #include <QTimer>
 #include <QMessageBox>
-#include "mainwindow.h"
-
-#include <QDebug>
+#include "MainWindow.h"
 
 const int BENEFIT_PERCENT = 0;
 const int BENEFIT_LIMIT = 0;
@@ -41,16 +39,16 @@ MainWindow::MainWindow(QWidget *parent) :
         lAmountPayment(new QLabel(this)),
         lBenefit(new QLabel(this)),
         lTo150(new QLabel(this)),
-        lOver150(new QLabel(this)),
+        lTo800(new QLabel(this)),
         lOver800(new QLabel(this)),
         lAmountBenefit(new QLabel(this)),
         lTariffBenefit(new QLabel(this)),
         lAmountTo150(new QLabel(this)),
-        lAmountOver150(new QLabel(this)),
+        lAmountTo800(new QLabel(this)),
         lAmountOver800(new QLabel(this)),
         lAmountPaymentBenefit(new QLabel(this)),
         lAmountPaymentTo150(new QLabel(this)),
-        lAmountPaymentOver150(new QLabel(this)),
+        lAmountPaymentTo800(new QLabel(this)),
         lAmountPaymentOver800(new QLabel(this)),
         lTotalPayment(new QLabel(this)),
         lTotal(new QLabel(this)),
@@ -58,7 +56,7 @@ MainWindow::MainWindow(QWidget *parent) :
         leCurrent(new QLineEdit(this)),
         lePrevious(new QLineEdit(this)),
         leTariffTo150(new QLineEdit(this)),
-        leTariffOver150(new QLineEdit(this)),
+        leTariffTo800(new QLineEdit(this)),
         leTariffOver800(new QLineEdit(this)),
 
         bPayment(new QPushButton(this)),
@@ -137,11 +135,11 @@ MainWindow::MainWindow(QWidget *parent) :
 
     lBenefit->setMargin(4);
     lTo150->setMargin(4);
-    lOver150->setMargin(4);
+    lTo800->setMargin(4);
     lOver800->setMargin(4);
 
     leTariffTo150->setTextMargins(2, 2, 2, 2);
-    leTariffOver150->setTextMargins(2, 2, 2, 2);
+    leTariffTo800->setTextMargins(2, 2, 2, 2);
     leTariffOver800->setTextMargins(2, 2, 2, 2);
 
     updateTime();
@@ -181,10 +179,10 @@ MainWindow::MainWindow(QWidget *parent) :
     grid->addWidget(leTariffTo150, 4, 4);
     grid->addWidget(lAmountPaymentTo150, 4, 5);
 
-    grid->addWidget(lOver150, 5, 0, 1, 3);
-    grid->addWidget(lAmountOver150, 5, 3);
-    grid->addWidget(leTariffOver150, 5, 4);
-    grid->addWidget(lAmountPaymentOver150, 5, 5);
+    grid->addWidget(lTo800, 5, 0, 1, 3);
+    grid->addWidget(lAmountTo800, 5, 3);
+    grid->addWidget(leTariffTo800, 5, 4);
+    grid->addWidget(lAmountPaymentTo800, 5, 5);
 
     grid->addWidget(lOver800, 6, 0, 1, 3);
     grid->addWidget(lAmountOver800, 6, 3);
@@ -207,7 +205,7 @@ MainWindow::MainWindow(QWidget *parent) :
     lAmountPaymentOver800->setFrameStyle(QFrame::Box);
 
     lTo150->setFrameStyle(QFrame::Box);
-    lOver150->setFrameStyle(QFrame::Box);
+    lTo800->setFrameStyle(QFrame::Box);
 
     lTariffBenefit->setFrameStyle(QFrame::Box);
     leTariffOver800->setStyleSheet("border: 1px solid black");
@@ -218,15 +216,15 @@ MainWindow::MainWindow(QWidget *parent) :
     lAmountConsumed->setFrameStyle(QFrame::Box);
     lTariff->setFrameStyle(QFrame::Box);
     lAmountTo150->setFrameStyle(QFrame::Box);
-    lAmountOver150->setFrameStyle(QFrame::Box);
+    lAmountTo800->setFrameStyle(QFrame::Box);
     lAmountPayment->setFrameStyle(QFrame::Box);
     lAmountPaymentTo150->setFrameStyle(QFrame::Box);
-    lAmountPaymentOver150->setFrameStyle(QFrame::Box);
+    lAmountPaymentTo800->setFrameStyle(QFrame::Box);
     lTotal->setFrameStyle(QFrame::Box);
     lePrevious->setStyleSheet("border: 1px solid black");
     leCurrent->setStyleSheet("border: 1px solid black");
     leTariffTo150->setStyleSheet("border: 1px solid black");
-    leTariffOver150->setStyleSheet("border: 1px solid black");
+    leTariffTo800->setStyleSheet("border: 1px solid black");
 
     /// seting minimum size of the widget
 //    this->setMinimumWidth(503);
@@ -294,13 +292,9 @@ void MainWindow::onButtonPayment()
     updateTime();
     timer->start(DATE_UPDATE_TIME);
     bForward->setEnabled(false);
-    bBackward->setEnabled(true);
+    bBackward->setEnabled(true);    
 
-    qDebug() << "111111111111111111";
-
-    payment = new Payment(leCurrent->text().toInt(), lePrevious->text().toInt());
-
-    qDebug() << "222222222222222222";
+    payment = new Payment(leCurrent->text().toInt(), lePrevious->text().toInt());    
 
     benefitPayment = new BenefitPayment(payment,
                                         leLimit->text().toInt(),
@@ -311,29 +305,25 @@ void MainWindow::onButtonPayment()
                                            leTariffTo150->text().toFloat());
     to800Payment = new AbstractPartPayment(payment,
                                            LIMIT_TO_800_TARIFF,
-                                           leTariffOver150->text().toFloat());
+                                           leTariffTo800->text().toFloat());
     over800Payment = new AbstractPartPayment(payment,
                                              LIMIT_OVER_800_TARIFF,
-                                             leTariffOver800->text().toDouble());
-    qDebug() << "333333333333333333";
+                                             leTariffOver800->text().toDouble());    
 
-    payment->addPartPayment(benefitPayment);
-    qDebug() << "!!!!!!!!!!!!!!!!!!";
+    payment->addPartPayment(benefitPayment);    
     payment->addPartPayment(to150Payment);
     payment->addPartPayment(to800Payment);
-    payment->addPartPayment(over800Payment);
-
-    qDebug() << "444444444444444444";
+    payment->addPartPayment(over800Payment);    
 
     lTariffBenefit->setText(QString::number(payment->partsPayment()->at(0)->tariff(), 'f', 4));
     lAmountConsumed->setText(QString::number(payment->consumed()));
     lAmountBenefit->setText(QString::number(payment->partsPayment()->at(0)->consumed()));
     lAmountTo150->setText(QString::number(payment->partsPayment()->at(1)->consumed()));
-    lAmountOver150->setText(QString::number(payment->partsPayment()->at(2)->consumed()));
+    lAmountTo800->setText(QString::number(payment->partsPayment()->at(2)->consumed()));
     lAmountOver800->setText(QString::number(payment->partsPayment()->at(3)->consumed()));
     lAmountPaymentBenefit->setText(QString::number(payment->partsPayment()->at(0)->amount(), 'f', 2));
     lAmountPaymentTo150->setText(QString::number(payment->partsPayment()->at(1)->amount(), 'f', 2));
-    lAmountPaymentOver150->setText(QString::number(payment->partsPayment()->at(2)->amount(), 'f', 2));
+    lAmountPaymentTo800->setText(QString::number(payment->partsPayment()->at(2)->amount(), 'f', 2));
     lAmountPaymentOver800->setText(QString::number(payment->partsPayment()->at(3)->amount(), 'f', 2));
     lTotal->setText(QString::number(payment->amountTotal(), 'f', 2));
 
@@ -362,7 +352,7 @@ void MainWindow::writeSettings()
     settings.setValue("Benefit", leBenefit->text());
     settings.setValue("BenefitLimit", leLimit->text());
     settings.setValue("TariffTo150", leTariffTo150->text());
-    settings.setValue("TariffOver150", leTariffOver150->text());
+    settings.setValue("TariffOver150", leTariffTo800->text());
     settings.setValue("TariffOver800", leTariffOver800->text());
     settings.setValue("HistoryLimit", HISTORY_LIMIT);
 }
@@ -375,7 +365,7 @@ void MainWindow::readSettings()
     leBenefit->setText(settings.value("Benefit", BENEFIT_PERCENT).toString());
     leLimit->setText(settings.value("BenefitLimit", BENEFIT_LIMIT).toString());
     leTariffTo150->setText(settings.value("TariffTo150", TO_150_TARIFF).toString());
-    leTariffOver150->setText(settings.value("TariffOver150", OVER_150_TARIFF).toString());
+    leTariffTo800->setText(settings.value("TariffOver150", OVER_150_TARIFF).toString());
     leTariffOver800->setText(settings.value("TariffOver800", OVER_800_TARIFF).toString());
     itsHistoryLimit = settings.value("HistoryLimit", HISTORY_LIMIT).toInt();
 }
@@ -393,15 +383,15 @@ void MainWindow::writeHistory()
     map.insert("consumed", lAmountConsumed->text());
     map.insert("benefit_consumed", lAmountBenefit->text());
     map.insert("to_150_consumed", lAmountTo150->text());
-    map.insert("over_150_consumed", lAmountOver150->text());
+    map.insert("over_150_consumed", lAmountTo800->text());
     map.insert("over_800_consumed", lAmountOver800->text());
     map.insert("benefit_tariff", lTariffBenefit->text());
     map.insert("to_150_tariff", leTariffTo150->text());
-    map.insert("over_150_tariff", leTariffOver150->text());
+    map.insert("over_150_tariff", leTariffTo800->text());
     map.insert("over_800_tariff", leTariffOver800->text());
     map.insert("benefit_invoicing", lAmountPaymentBenefit->text());
     map.insert("to_150_invoicing", lAmountPaymentTo150->text());
-    map.insert("over_150_invoicing", lAmountPaymentOver150->text());
+    map.insert("over_150_invoicing", lAmountPaymentTo800->text());
     map.insert("over_800_invoicing", lAmountPaymentOver800->text());
     map.insert("invoicing", lTotal->text());
 
@@ -426,15 +416,15 @@ void MainWindow::setFromHistory(QMap<QString, QString> map)
     lAmountConsumed->setText(map.value("consumed"));
     lAmountBenefit->setText(map.value("benefit_consumed"));
     lAmountTo150->setText(map.value("to_150_consumed"));
-    lAmountOver150->setText(map.value("over_150_consumed"));
+    lAmountTo800->setText(map.value("over_150_consumed"));
     lAmountOver800->setText(map.value("over_800_consumed"));
     lTariffBenefit->setText(map.value("benefit_tariff"));
     leTariffTo150->setText(map.value("to_150_tariff"));
-    leTariffOver150->setText(map.value("over_150_tariff"));
+    leTariffTo800->setText(map.value("over_150_tariff"));
     leTariffOver800->setText(map.value("over_800_tariff"));
     lAmountPaymentBenefit->setText(map.value("benefit_invoicing"));
     lAmountPaymentTo150->setText(map.value("to_150_invoicing"));
-    lAmountPaymentOver150->setText(map.value("over_150_invoicing"));
+    lAmountPaymentTo800->setText(map.value("over_150_invoicing"));
     lAmountPaymentOver800->setText(map.value("over_800_invoicing"));
     lTotal->setText(map.value("invoicing"));
 }
@@ -560,7 +550,7 @@ void MainWindow::updateWidgetText()
     lAmountPayment->setText(QObject::trUtf8("Payment\namount, UAH"));
     lBenefit->setText(QObject::trUtf8("Benefits, kWh"));
     lTo150->setText(QObject::trUtf8("to 150/250 kWh"));
-    lOver150->setText(QObject::trUtf8("from 150/250 to 800 kWh"));
+    lTo800->setText(QObject::trUtf8("from 150/250 to 800 kWh"));
     lOver800->setText(QObject::trUtf8("over 800 kWh"));
     lTotalPayment->setText(QObject::trUtf8("Total to pay, UAH"));
     bPayment->setText(QObject::trUtf8("Calculation"));

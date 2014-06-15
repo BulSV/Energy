@@ -1,16 +1,16 @@
-#include "payment.h"
+#include "Payment.h"
 
 Payment::Payment():  
     itsCurrent(0)
   , itsPrevious(0)
-  , itsPartsPayment(0)
+  , itsPartsPayment(new QList<AbstractPartPayment*>)
 {
 }
 
 Payment::Payment(int current, int previous):
     itsCurrent(current)
   , itsPrevious(previous)
-  , itsPartsPayment(0)
+  , itsPartsPayment(new QList<AbstractPartPayment*>)
 {
 }
 

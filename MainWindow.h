@@ -9,7 +9,7 @@
 #include <QMutableListIterator>
 #include <QComboBox>
 #include <QTranslator>
-#include "payment.h"
+#include "Payment.h"
 #include "BenefitPayment.h"
 #include "AbstractPartPayment.h"
 #include "XmlHistoryManager.h"
@@ -23,7 +23,7 @@ enum LANGUAGES
 
 class MainWindow : public QWidget
 {
-Q_OBJECT
+    Q_OBJECT
     QLocale locale;
     QTranslator translator;
     LANGUAGES currentLanguage;
@@ -47,16 +47,16 @@ Q_OBJECT
     QLabel *lAmountPayment;
     QLabel *lBenefit;
     QLabel *lTo150;
-    QLabel *lOver150;
+    QLabel *lTo800;
     QLabel *lOver800;
     QLabel *lAmountBenefit;
     QLabel *lTariffBenefit;
     QLabel *lAmountTo150;
-    QLabel *lAmountOver150;
+    QLabel *lAmountTo800;
     QLabel *lAmountOver800;
     QLabel *lAmountPaymentBenefit;
     QLabel *lAmountPaymentTo150;
-    QLabel *lAmountPaymentOver150;
+    QLabel *lAmountPaymentTo800;
     QLabel *lAmountPaymentOver800;
     QLabel *lTotalPayment;
     QLabel *lTotal;
@@ -64,7 +64,7 @@ Q_OBJECT
     QLineEdit *leCurrent;
     QLineEdit *lePrevious;
     QLineEdit *leTariffTo150;
-    QLineEdit *leTariffOver150;
+    QLineEdit *leTariffTo800;
     QLineEdit *leTariffOver800;
 
     QPushButton *bPayment;
@@ -102,16 +102,10 @@ private slots:
     void setupLanguage();
     void updateWidgetText();
     void updateDialogText();
-
+    void onButtonPayment();
 public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
-
-signals:
-
-public slots:
-    void onButtonPayment();
-
 };
 
 #endif // MAINWINDOW_H
